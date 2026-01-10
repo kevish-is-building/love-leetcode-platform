@@ -79,4 +79,114 @@ export const authAPI = {
   },
 };
 
+// Problem API calls
+export const problemAPI = {
+  /**
+   * Get all problems
+   */
+  getAll: async () => {
+    return apiFetch('/problems/get-problems', {
+      method: 'GET',
+    });
+  },
+
+  /**
+   * Get problem by ID
+   */
+  getById: async (id: string) => {
+    return apiFetch(`/problems/${id}`, {
+      method: 'GET',
+    });
+  },
+
+  /**
+   * Delete a problem
+   */
+  delete: async (id: string) => {
+    return apiFetch(`/problems/delete-problem/${id}`, {
+      method: 'DELETE',
+    });
+  },
+
+  /**
+   * Create a new problem
+   */
+  create: async (data: any) => {
+    return apiFetch('/problems/create-problem', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  /**
+   * Update a problem
+   */
+  update: async (id: string, data: any) => {
+    return apiFetch(`/problems/update-problem/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  },
+};
+
+// Playlist API calls
+export const playlistAPI = {
+  /**
+   * Get all playlists
+   */
+  getAll: async () => {
+    return apiFetch('/playlist', {
+      method: 'GET',
+    });
+  },
+
+  /**
+   * Get playlist by ID
+   */
+  getById: async (id: string) => {
+    return apiFetch(`/playlist/${id}`, {
+      method: 'GET',
+    });
+  },
+
+  /**
+   * Create a new playlist
+   */
+  create: async (data: any) => {
+    return apiFetch('/playlist/create-playlist', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  /**
+   * Add problem to playlist
+   */
+  addProblem: async (playlistId: string, problemIds: string[]) => {
+    return apiFetch(`/playlist/${playlistId}/add-problem`, {
+      method: 'POST',
+      body: JSON.stringify({ problemIds }),
+    });
+  },
+
+  /**
+   * Remove problem from playlist
+   */
+  removeProblem: async (playlistId: string, problemIds: string[]) => {
+    return apiFetch(`/playlist/${playlistId}/remove-problem`, {
+      method: 'DELETE',
+      body: JSON.stringify({ problemIds }),
+    });
+  },
+
+  /**
+   * Delete a playlist
+   */
+  delete: async (id: string) => {
+    return apiFetch(`/playlist/${id}`, {
+      method: 'DELETE',
+    });
+  },
+};
+
 export { API_BASE_URL };
