@@ -164,7 +164,7 @@ export default function ProblemsPage() {
   const isAdmin = user?.role === "ADMIN";
 
   return (
-    <div className="min-h-screen [background:radial-gradient(125%_125%_at_50%_10%,#000_50%,#63e_100%)]">
+    <div className="min-h-screen bg-transparent">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
         {/* Header Section */}
         <motion.div
@@ -197,7 +197,7 @@ export default function ProblemsPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7, duration: 0.7 }}
-          className="rounded-2xl bg-gray-800/30 backdrop-blur-xl border border-gray-700/50 overflow-hidden shadow-2xl"
+          className="rounded-sm bg-gray-800/30 backdrop-blur-xl border border-gray-700/50 overflow-hidden shadow-2xl"
         >
           <div className="overflow-x-auto">
             <table className="min-w-full">
@@ -274,7 +274,7 @@ export default function ProblemsPage() {
                           </td>
                           <td className="px-6 py-5 whitespace-nowrap">
                             <span
-                              className={`px-3 py-1.5 text-xs font-semibold rounded-lg ${getDifficultyColor(
+                              className={`px-3 py-1.5 text-xs font-semibold rounded-sm ${getDifficultyColor(
                                 problem.difficulty
                               )}`}
                             >
@@ -306,7 +306,7 @@ export default function ProblemsPage() {
                               {problem?.tags?.slice(0, 2).map((tag, index) => (
                                 <span
                                   key={`${problem.id}-${tag}-${index}`}
-                                  className="px-3 py-1 text-xs bg-purple-900/30 text-purple-200 rounded-lg border border-purple-500/30 font-medium"
+                                  className="px-3 py-1 text-xs bg-purple-900/30 text-purple-200 rounded-sm border border-purple-500/30 font-medium"
                                 >
                                   {tag}
                                 </span>
@@ -316,7 +316,7 @@ export default function ProblemsPage() {
                                 </span>
                               )}
                               {problem?.tags && problem.tags.length > 2 && (
-                                <span className="px-3 py-1 text-xs bg-purple-900/30 text-purple-200 rounded-lg border border-purple-500/30 font-medium">
+                                <span className="px-3 py-1 text-xs bg-purple-900/30 text-purple-200 rounded-sm border border-purple-500/30 font-medium">
                                   +{problem.tags.length - 2}
                                 </span>
                               )}
