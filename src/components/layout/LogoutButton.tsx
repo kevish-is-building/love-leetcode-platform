@@ -1,7 +1,7 @@
 import React from "react";
 import { useAuthStore } from "../../store/useAuthStore";
 
-const LogoutButton = ({ children }) => {
+const LogoutButton = ({ children }: { children: React.ReactNode }) => {
   const { logout } = useAuthStore();
 
   const onLogout = async () => {

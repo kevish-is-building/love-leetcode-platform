@@ -8,12 +8,14 @@ import { Menu, X, Code, User, LogOut } from "lucide-react";
 import { useAuthStore } from "../../store/useAuthStore";
 import LogoutButton from "./LogoutButton";
 import GlassSurface from "./GlassSurface";
+import Loader from "../ui/loader";
 
 const Navbar = () => {
-  const { user } = useAuthStore();
+  const { user, isAuthenticated, isLoading, logout } = useAuthStore();
 
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -34,11 +36,11 @@ const Navbar = () => {
   };
 
   const navLinks = [
-    { name: "Problems", path: "/problems" },
-    { name: "Learn", path: "/learn" },
-    { name: "Contest", path: "/contest" },
-    { name: "Contact Us", path: "/contact" },
-    { name: "Dashboard", path: "/dashboard" },
+    { name: "Problems", path: "/problems", isProtected: true },
+    { name: "Learn", path: "/learn", isProtected: false },
+    { name: "Contest", path: "/contest", isProtected: false },
+    { name: "Contact Us", path: "/contact", isProtected: false },
+    { name: "Dashboard", path: "/dashboard", isProtected: true },
   ];
 
   const adminNavLinks = [
@@ -112,7 +114,7 @@ const Navbar = () => {
                       {navLinks.map((link) => (
                         <Link
                           key={link.name}
-                          href={link.path}
+                          href={link.isProtected && !isAuthenticated ? "/auth" : link.path}
                           className={`px-3 py-2 text-sm font-medium transition-colors duration-200  ${
                             pathname === link.path
                               ? "text-lime-400"
@@ -136,24 +138,40 @@ const Navbar = () => {
                         </Link>
                       )}
 
-                      <Link
-                        href="/dashboard"
-                        className="rounded-full text-gray-300 hover:text-lime-400 focus:outline-none cursor-pointer"
-                      >
-                        {user?.image ? (
-                          <img
-                            src={user?.image}
-                            alt="Profile"
-                            className="w-8 h-8 rounded-full hover:scale-105 transition-all duration-200 cursor-pointer"
-                          />
-                        ) : (
-                          <User size={20} />
-                        )}
-                      </Link>
-                      {user && (
-                        <LogoutButton>
-                          <LogOut className="w-4 h-4 text-white hover:text-rose-500 cursor-pointer" />
-                        </LogoutButton>
+                      {isLoading ? (
+                        <div className="flex items-center">
+                          <Loader />
+                        </div>
+                      ) : isAuthenticated ? (
+                        <>
+                          <Link
+                            href="/dashboard"
+                            className="rounded-full text-gray-300 hover:text-lime-400 focus:outline-none cursor-pointer"
+                          >
+                            {user?.image ? (
+                              <img
+                                src={user?.image}
+                                alt="Profile"
+                                className="w-8 h-8 rounded-full hover:scale-105 transition-all duration-200 cursor-pointer"
+                              />
+                            ) : (
+                              <User size={20} />
+                            )}
+                          </Link>
+                          <button
+                            onClick={logout}
+                            className="flex items-center px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors cursor-pointer"
+                          >
+                            Logout
+                          </button>
+                        </>
+                      ) : (
+                        <Link
+                          href="/auth"
+                          className="px-4 py-2 text-sm font-medium text-white border border-indigo-500 hover:bg-indigo-700/60 rounded-lg transition-colors"
+                        >
+                          Login / Signup
+                        </Link>
                       )}
                     </div>
                   </div>

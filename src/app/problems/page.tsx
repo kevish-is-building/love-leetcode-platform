@@ -13,6 +13,9 @@ import { motion, AnimatePresence } from "framer-motion";
 
 import { useAuthStore } from "@/store/useAuthStore";
 import { useProblemStore } from "@/store/useProblemStore";
+import Loader  from "@/components/ui/loader";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { Router } from "next/router";
 
 // Types
 interface ConfirmDeleteModalProps {
@@ -162,6 +165,22 @@ export default function ProblemsPage() {
   }, []);
 
   const isAdmin = user?.role === "ADMIN";
+
+  if (!user) {
+    return (
+      <ProtectedRoute>
+        <div className="min-h-screen bg-transparent flex items-center justify-center">
+          <Loader />
+        </div>
+      </ProtectedRoute>
+    );
+  }
+
+  if (problemsLoading) {
+    return <div className="min-h-screen bg-transparent flex items-center justify-center">
+      <Loader />
+      </div>
+  }
 
   return (
     <div className="min-h-screen bg-transparent">
