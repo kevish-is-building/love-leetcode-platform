@@ -4,6 +4,8 @@ import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import { AuthInitializer } from "@/components/auth/AuthInitializer";
 import ConditionalLayout, { ConditionalFooter } from "@/components/layout/ConditionalLayout";
+import { Analytics } from "@vercel/analytics/next"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -82,6 +84,8 @@ export default function RootLayout({
         />
         <ConditionalLayout />
         {children}
+        <Analytics />
+        <SpeedInsights />
         <ConditionalFooter />
       </body>
     </html>
