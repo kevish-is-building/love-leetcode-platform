@@ -113,7 +113,7 @@ export default function CreatePlaylistModal({
                 <Button
                   type="button"
                   variant="outline"
-                  className="rounded-full border-purple-500/30 bg-transparent text-white hover:bg-purple-500/10 hover:text-white cursor-pointer"
+                  className="rounded-full border-purple-500/30 bg-transparent text-white hover:bg-purple-500/40 hover:text-white cursor-pointer"
                   size="lg"
                   onClick={handleClose}
                 >

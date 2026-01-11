@@ -2,10 +2,13 @@
 
 import { useState, useCallback } from "react";
 import Link from "next/link";
-import { ArrowUpRight, X, Plus, Check } from "lucide-react";
+import { ArrowUpRight, X, Plus, Check, PlusIcon } from "lucide-react";
 import { motion } from "framer-motion";
+import { Button } from "../ui/button";
 
 interface Problem {
+  problem: any;
+  problemId: string | undefined;
   id: string;
   title: string;
   difficulty: "EASY" | "MEDIUM" | "HARD";
@@ -75,6 +78,7 @@ const ProblemItem = ({
   onRemove?: () => void;
   isLast: boolean;
 }) => {
+  console.log("----------", problem);
   return (
     <>
       <div
@@ -84,7 +88,7 @@ const ProblemItem = ({
       >
         <div className="flex items-center gap-3 flex-1 min-w-0">
           <Link
-            href={`/problem/${problem.id}`}
+            href={`/problem/${problem.problemId}`}
             className={`flex items-center gap-2 transition-colors min-w-0 ${
               isSolved
                 ? "text-green-400 hover:text-green-300"
@@ -107,24 +111,26 @@ const ProblemItem = ({
           )}
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 ml-1">
           {/* Tags */}
           <div className="hidden sm:flex items-center gap-1.5">
-            {problem.tags?.slice(0, 3).map((tag, index) => (
-              <span
-                key={`${problem.id}-${tag}-${index}`}
-                className="px-2 py-0.5 text-xs bg-gray-800/80 text-gray-300 rounded border border-gray-600/50"
-              >
-                {tag}
-              </span>
-            ))}
+            {problem.problem.tags
+              ?.slice(0, 2)
+              .map((tag: string, index: number) => (
+                <span
+                  key={`${problem.problemId}-${tag}-${index}`}
+                  className="px-2 py-0.5 text-xs bg-gray-800/80 text-gray-300 rounded border border-gray-600/50"
+                >
+                  {tag}
+                </span>
+              ))}
           </div>
 
           {/* Remove button */}
           {onRemove && (
             <button
               onClick={onRemove}
-              className="p-1.5 text-gray-400 hover:text-red-400 hover:bg-red-900/20 rounded transition-all opacity-0 group-hover:opacity-100"
+              className="p-1.5 text-gray-400 hover:text-red-400 hover:bg-red-900/20 rounded transition-all opacity-0 group-hover:opacity-100 cursor-pointer"
               aria-label="Remove problem from playlist"
             >
               <X className="w-4 h-4" />
@@ -174,7 +180,7 @@ export default function PlaylistCard({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-gray-800/30 backdrop-blur-xl border border-gray-700/50 rounded-lg overflow-hidden shadow-xl"
+      className="bg-transparent backdrop-blur-sm border border-gray-700/50 rounded-sm overflow-hidden shadow-xl"
     >
       {/* Header */}
       <div className="p-4 border-b border-gray-700/50">
@@ -192,53 +198,59 @@ export default function PlaylistCard({
 
           <div className="flex items-center gap-2 shrink-0">
             {onAddProblem && (
-              <button
+              <Button
+                className="group gap-1 rounded-full border-t border-purple-400 bg-linear-to-b from-purple-700 to-slate-950/80  text-white shadow-lg shadow-purple-600/20 transition-all hover:shadow-purple-600/40 cursor-pointer"
+                size="default"
                 onClick={() => onAddProblem(id)}
-                className="px-3 py-1.5 text-sm bg-purple-600/80 hover:bg-purple-600 text-white rounded border border-purple-500/50 transition-all flex items-center gap-1.5"
               >
-                <Plus className="w-4 h-4" />
+                <PlusIcon className="transition-transform duration-300 group-hover:rotate-180" />
                 Add
-              </button>
+              </Button>
             )}
             {onEdit && (
-              <button
+              <Button
+                variant="outline"
+                className="rounded-full border-purple-500/30 bg-transparent text-white hover:bg-purple-500/40 hover:text-white cursor-pointer"
+                size="default"
                 onClick={() => onEdit(id)}
-                className="px-3 py-1.5 text-sm bg-gray-700/50 hover:bg-gray-700 text-gray-300 hover:text-white rounded border border-gray-600/50 transition-all"
               >
                 Edit
-              </button>
+              </Button>
             )}
             {onDelete && (
-              <button
+              <Button
+                variant="outline"
+                className="rounded-full border-purple-500/30 bg-transparent text-white hover:bg-rose-600/60 hover:text-white cursor-pointer"
+                size="default"
                 onClick={() => onDelete(id)}
-                className="px-3 py-1.5 text-sm bg-gray-700/50 hover:bg-red-900/30 text-gray-300 hover:text-red-400 rounded border border-gray-600/50 hover:border-red-500/30 transition-all"
               >
                 Delete
-              </button>
+              </Button>
             )}
           </div>
         </div>
 
-        <div className="flex justify-end mt-2">
+        {/* Problem count */}
+        {/* <div className="flex justify-end mt-2">
           <span className="text-sm text-gray-400">
             {problems.length} problem{problems.length !== 1 ? "s" : ""}
           </span>
-        </div>
+        </div> */}
       </div>
 
       {/* Problems list */}
       <div className="p-4">
         {problems.length > 0 ? (
-          <div className="max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent">
+          <div className="max-h-64 overflow-y-auto scrollbar-thin scrollbar-black scrollbar-track-transparent">
             {problems.map((problem, index) => (
               <ProblemItem
-                key={problem.id}
+                key={problem?.problemId || Math.random().toString(36)}
                 problem={problem}
                 isSolved={isProblemSolved(problem)}
                 isLast={index === problems.length - 1}
                 onRemove={
                   onRemoveProblem
-                    ? () => handleRemoveProblem(problem.id)
+                    ? () => handleRemoveProblem(problem.problemId || "")
                     : undefined
                 }
               />

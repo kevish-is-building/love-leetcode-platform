@@ -154,13 +154,13 @@ export default function ProblemsPage() {
   const getDifficultyColor = useCallback((difficulty: string) => {
     switch (difficulty) {
       case "EASY":
-        return "text-green-300 bg-green-900/30 border border-green-500/30";
+        return "text-green-300 border border-green-500/30";
       case "MEDIUM":
-        return "text-yellow-300 bg-yellow-900/30 border border-yellow-500/30";
+        return "text-yellow-300 border border-yellow-500/30";
       case "HARD":
-        return "text-red-300 bg-red-900/30 border border-red-500/30";
+        return "text-red-300 border border-red-500/30";
       default:
-        return "text-gray-300 bg-gray-900/30 border border-gray-500/30";
+        return "text-gray-300 border border-gray-500/30";
     }
   }, []);
 
@@ -293,7 +293,7 @@ export default function ProblemsPage() {
                           </td>
                           <td className="px-6 py-5 whitespace-nowrap">
                             <span
-                              className={`px-3 py-1.5 text-xs font-semibold rounded-sm ${getDifficultyColor(
+                              className={`px-2 py-1 text-xs font-semibold rounded-sm ${getDifficultyColor(
                                 problem.difficulty
                               )}`}
                             >
@@ -325,7 +325,7 @@ export default function ProblemsPage() {
                               {problem?.tags?.slice(0, 2).map((tag, index) => (
                                 <span
                                   key={`${problem.id}-${tag}-${index}`}
-                                  className="px-3 py-1 text-xs bg-purple-900/30 text-purple-200 rounded-sm border border-purple-500/30 font-medium"
+                                  className="px-2 py-0.5 text-xs text-gray-300 rounded border border-gray-600/50"
                                 >
                                   {tag}
                                 </span>
@@ -335,7 +335,7 @@ export default function ProblemsPage() {
                                 </span>
                               )}
                               {problem?.tags && problem.tags.length > 2 && (
-                                <span className="px-3 py-1 text-xs bg-purple-900/30 text-purple-200 rounded-sm border border-purple-500/30 font-medium">
+                                <span className="px-2 py-0.5 text-xs text-gray-300 rounded border border-gray-600/50">
                                   +{problem.tags.length - 2}
                                 </span>
                               )}
