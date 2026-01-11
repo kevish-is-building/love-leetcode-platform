@@ -277,17 +277,17 @@ export default function ProblemSolverPage() {
                     </div>
 
                     <div>
-                      <h3 className="text-sm font-semibold text-zinc-300 mb-2">
+                      <h3 className="text-sm font-semibold text-white mb-2">
                         Description
                       </h3>
-                      <p className="text-sm text-zinc-400 leading-relaxed whitespace-pre-line">
+                      <p className="text-sm text-zinc-300 leading-relaxed whitespace-pre-line">
                         {problem.description}
                       </p>
                     </div>
 
                     {examples.length > 0 && (
                       <div>
-                        <h3 className="text-sm font-semibold text-zinc-300 mb-2">
+                        <h3 className="text-sm font-semibold text-white mb-2">
                           Example
                         </h3>
                         {examples.map((ex, i) => (
@@ -296,7 +296,7 @@ export default function ProblemSolverPage() {
                             className="mb-3 border border-zinc-700 rounded-sm p-3 space-y-2"
                           >
                             <div className="">
-                              <span className="text-xs text-zinc-500">
+                              <span className="text-xs text-zinc-400">
                                 Input:
                               </span>
                               <code className="block mt-0.5 text-sm text-zinc-300 font-mono">
