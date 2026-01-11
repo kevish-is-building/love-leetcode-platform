@@ -12,9 +12,6 @@ import {
   History,
   Lightbulb,
   MessageSquare,
-  Star,
-  ChevronLeft,
-  ChevronRight,
   Plus,
   Check,
   X,
@@ -25,6 +22,7 @@ import { problemAPI } from "@/lib/api";
 import Loader from "@/components/ui/loader";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import FuzzyText from "@/components/layout/FuzzyText";
+import { Button } from "@/components/ui/button";
 
 // Types
 interface TestCase {
@@ -189,12 +187,13 @@ export default function ProblemSolverPage() {
           <h2 className="text-xl font-bold text-red-400 mb-4">
             {error || "Problem not found"}
           </h2>
-          <button
+          <Button
+            className="group rounded-full border-t border-purple-400 bg-linear-to-b from-purple-700 to-slate-950/80 px-6 py-6 text-white shadow-lg shadow-purple-600/20 transition-all hover:shadow-purple-600/40 cursor-pointer"
+            size="lg"
             onClick={() => router.push("/problems")}
-            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg"
           >
             Back to Problems
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -230,7 +229,7 @@ export default function ProblemSolverPage() {
       <div className="flex-1 overflow-hidden">
         <PanelGroup direction="horizontal">
           {/* Left Panel */}
-          <Panel defaultSize={40} minSize={25}>
+          <Panel defaultSize={40} minSize={20}>
             <div className="h-full flex flex-col bg-transparent">
               <div className="flex border-b border-zinc-800 overflow-x-auto shrink-0">
                 {tabs.map((t) => (
@@ -294,7 +293,7 @@ export default function ProblemSolverPage() {
                         {examples.map((ex, i) => (
                           <div
                             key={i}
-                            className="mb-3 border border-zinc-700 rounded-lg p-3 space-y-2"
+                            className="mb-3 border border-zinc-700 rounded-sm p-3 space-y-2"
                           >
                             <div className="">
                               <span className="text-xs text-zinc-500">
@@ -409,21 +408,21 @@ export default function ProblemSolverPage() {
             </div>
           </Panel>
 
-          <PanelResizeHandle className="w-1 bg-zinc-800 hover:bg-orange-500/50 transition-colors" />
+          <PanelResizeHandle className="w-1 bg-zinc-800 hover:bg-zinc-500 transition-colors" />
 
           {/* Right Panel */}
-          <Panel defaultSize={60} minSize={40}>
+          <Panel defaultSize={70} minSize={40}>
             <PanelGroup direction="vertical">
               {/* Editor */}
-              <Panel defaultSize={65} minSize={30}>
-                <div className="h-full flex flex-col bg-zinc-900">
+              <Panel defaultSize={60} minSize={30}>
+                <div className="h-full flex flex-col bg-transparent">
                   <div className="h-10 px-3 flex items-center justify-between border-b border-zinc-800 shrink-0">
                     <span className="text-xs text-zinc-400">Code Editor</span>
                     <div className="flex items-center gap-2">
                       <select
                         value={language}
                         onChange={(e) => setLanguage(e.target.value)}
-                        className="bg-zinc-800 text-zinc-300 text-xs px-2 py-1 rounded border border-zinc-700 focus:outline-none"
+                        className="bg-transparent text-zinc-300 text-xs px-2 py-1 rounded border border-zinc-700 focus:outline-none"
                       >
                         {Object.keys(
                           problem.codeSnippets || { javascript: "" }
@@ -446,7 +445,7 @@ export default function ProblemSolverPage() {
                   <div className="flex-1">
                     <Editor
                       height="100%"
-                      language={LANG_MAP[language] || "javascript"}
+                      language={language?.toLowerCase() || "javascript"}
                       theme="vs-dark"
                       value={code}
                       onChange={(v) => setCode(v || "")}
@@ -457,16 +456,18 @@ export default function ProblemSolverPage() {
                         scrollBeyondLastLine: false,
                         automaticLayout: true,
                         tabSize: 2,
-                        padding: { top: 12 },
+                        wordWrap: "on",
+                        roundedSelection: false,
                       }}
                     />
                   </div>
 
-                  <div className="h-11 px-3 flex items-center justify-end gap-2 border-t border-zinc-800 shrink-0">
-                    <button
+                  <div className="h-14 px-3 flex items-center justify-start gap-2 border-t border-zinc-800 shrink-0">
+                    <Button
+                      variant="outline"
+                      className="rounded-full border-purple-500/30 bg-transparent text-white hover:bg-purple-500/40 hover:text-white cursor-pointer"
+                      size="sm"
                       onClick={handleRun}
-                      disabled={isRunning || isSubmitting}
-                      className="flex items-center gap-1.5 px-4 py-1.5 bg-zinc-700 hover:bg-zinc-600 text-white text-sm rounded disabled:opacity-50"
                     >
                       {isRunning ? (
                         <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -474,11 +475,13 @@ export default function ProblemSolverPage() {
                         <Play className="w-3.5 h-3.5" />
                       )}
                       Run
-                    </button>
-                    <button
-                      onClick={handleSubmit}
+                    </Button>
+
+                    <Button
+                      className="group rounded-full border-t border-purple-400 bg-linear-to-b from-purple-700 to-slate-950/80  text-white shadow-lg shadow-purple-600/20 transition-all hover:shadow-purple-600/40 cursor-pointer"
+                      size="sm"
                       disabled={isRunning || isSubmitting}
-                      className="flex items-center gap-1.5 px-4 py-1.5 bg-green-600 hover:bg-green-500 text-white text-sm rounded disabled:opacity-50"
+                      onClick={handleSubmit}
                     >
                       {isSubmitting ? (
                         <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -486,22 +489,22 @@ export default function ProblemSolverPage() {
                         <Send className="w-3.5 h-3.5" />
                       )}
                       Submit
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </Panel>
 
-              <PanelResizeHandle className="h-1 bg-zinc-800 hover:bg-orange-500/50 transition-colors" />
+              <PanelResizeHandle className="h-1 bg-zinc-800 hover:bg-zinc-500 transition-colors" />
 
               {/* Test Cases */}
-              <Panel defaultSize={35} minSize={20}>
-                <div className="h-full flex flex-col bg-zinc-900/80">
+              <Panel defaultSize={30} minSize={20}>
+                <div className="h-full flex flex-col bg-transparent">
                   <div className="h-10 px-3 flex items-center gap-2 border-b border-zinc-800 shrink-0">
                     <button
                       onClick={() => setShowResults(false)}
                       className={`px-2 py-1 text-xs rounded ${
                         !showResults
-                          ? "bg-zinc-700 text-white"
+                          ? " text-lime-400 border border-lime-500/30"
                           : "text-zinc-400 hover:text-white"
                       }`}
                     >
@@ -511,7 +514,7 @@ export default function ProblemSolverPage() {
                       onClick={() => setShowResults(true)}
                       className={`px-2 py-1 text-xs rounded ${
                         showResults
-                          ? "bg-zinc-700 text-white"
+                          ? " text-lime-400 border border-lime-500/30"
                           : "text-zinc-400 hover:text-white"
                       }`}
                     >
@@ -523,40 +526,37 @@ export default function ProblemSolverPage() {
                     {!showResults ? (
                       <div>
                         <div className="flex items-center gap-2 mb-3 flex-wrap">
-                          {testCases.slice(0, 3).map((_, i) => (
+                          {testCases.slice(0, 2).map((_, i) => (
                             <button
                               key={i}
                               onClick={() => setActiveCase(i)}
-                              className={`px-3 py-1 text-xs rounded ${
+                              className={`px-3 py-1 text-xs rounded cursor-pointer ${
                                 activeCase === i
-                                  ? "bg-orange-500/20 text-orange-400 border border-orange-500/30"
-                                  : "bg-zinc-800 text-zinc-400 hover:text-white"
+                                  ? "border border-purple-500/30 text-white bg-purple-700/40"
+                                  : "border border-purple-500/30  text-white hover:bg-purple-700/20"
                               }`}
                             >
                               Case {i + 1}
                             </button>
                           ))}
-                          <button className="p-1 text-zinc-500 hover:text-white">
-                            <Plus className="w-4 h-4" />
-                          </button>
                         </div>
                         {testCases[activeCase] && (
                           <div className="space-y-3">
                             <div>
-                              <label className="text-xs text-zinc-500 block mb-1">
+                              <label className="text-xs text-white block mb-1">
                                 Input
                               </label>
-                              <div className="bg-zinc-800 rounded p-2">
+                              <div className="bg-transparent border border-zinc-400/40 rounded p-2">
                                 <code className="text-sm text-zinc-300 font-mono">
                                   {testCases[activeCase].input}
                                 </code>
                               </div>
                             </div>
                             <div>
-                              <label className="text-xs text-zinc-500 block mb-1">
+                              <label className="text-xs text-white block mb-1">
                                 Expected Output
                               </label>
-                              <div className="bg-zinc-800 rounded p-2">
+                              <div className="bg-transparent border border-zinc-400/40 rounded p-2">
                                 <code className="text-sm text-zinc-300 font-mono">
                                   {testCases[activeCase].output}
                                 </code>

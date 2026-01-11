@@ -26,8 +26,8 @@ const StyledWrapper = styled.div`
   }
 
   .loader {
-    width: 20px;
-    height: 20px;
+    width: 30px;
+    height: 30px;
     aspect-ratio: 1 / 1;
     border-radius: 50%;
     background-color: transparent;
