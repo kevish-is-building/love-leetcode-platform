@@ -85,7 +85,7 @@ export default function CreatePlaylistModal({
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Enter playlist name"
-                  className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600/50 rounded-sm text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/50 focus:ring-0 focus:ring-purple-500/50 transition-all"
+                  className="w-full px-3 py-2.5 bg-gray-800/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50 transition-all"
                   required
                   autoFocus
                 />
@@ -104,7 +104,7 @@ export default function CreatePlaylistModal({
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Enter playlist description (optional)"
                   rows={3}
-                  className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600/50 rounded-sm text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/50 focus:ring focus:ring-purple-500/50 transition-all resize-none"
+                  className="w-full px-3 py-2.5 bg-gray-800/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50 transition-all resize-none"
                 />
               </div>
 

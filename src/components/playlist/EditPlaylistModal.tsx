@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "../ui/button";
 
 interface EditPlaylistModalProps {
   isOpen: boolean;
@@ -55,7 +56,7 @@ export default function EditPlaylistModal({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={handleClose}
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            className="absolute inset-0 bg-transparent backdrop-blur-xs"
           />
 
           {/* Modal */}
@@ -64,17 +65,17 @@ export default function EditPlaylistModal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="relative w-full max-w-md mx-4 bg-gray-900/95 backdrop-blur-xl border border-gray-700/50 rounded-lg shadow-2xl"
+            className="relative w-full max-w-md mx-4 bg-transparent backdrop-blur-xl border border-gray-700/50 rounded-sm shadow-2xl"
           >
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-gray-700/50">
               <h2 className="text-xl font-semibold text-white">Edit Playlist</h2>
               <button
                 onClick={handleClose}
-                className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-700/50 rounded transition-colors"
+                className="group p-1.5 text-gray-400 hover:text-white hover:bg-gray-700/50 rounded-sm transition-colors cursor-pointer"
                 aria-label="Close modal"
               >
-                <X className="w-5 h-5" />
+                <X className="w-5 h-5 group-hover:text-rose-700 transition-all group-hover:rotate-90" />
               </button>
             </div>
 
@@ -118,20 +119,22 @@ export default function EditPlaylistModal({
 
               {/* Actions */}
               <div className="flex justify-end gap-3 pt-2">
-                <button
+                <Button
                   type="button"
+                  variant="outline"
+                  className="rounded-full border-purple-500/30 bg-transparent text-white hover:bg-purple-500/40 hover:text-white cursor-pointer"
+                  size="lg"
                   onClick={handleClose}
-                  className="px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-700/50 rounded-lg transition-colors"
                 >
                   Cancel
-                </button>
-                <button
+                </Button>
+                <Button
                   type="submit"
                   disabled={!name.trim() || isLoading}
-                  className="px-4 py-2 text-sm bg-purple-600 hover:bg-purple-500 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="group rounded-full border-t border-purple-400 bg-linear-to-b from-purple-700 to-slate-950/80  text-white shadow-lg shadow-purple-600/20 transition-all hover:shadow-purple-600/40 cursor-pointer"
                 >
                   {isLoading ? "Saving..." : "Save Changes"}
-                </button>
+                </Button>
               </div>
             </form>
           </motion.div>

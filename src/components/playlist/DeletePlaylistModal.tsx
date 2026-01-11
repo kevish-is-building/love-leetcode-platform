@@ -2,6 +2,7 @@
 
 import { Trash2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "../ui/button";
 
 interface DeletePlaylistModalProps {
   isOpen: boolean;
@@ -28,7 +29,7 @@ export default function DeletePlaylistModal({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            className="absolute inset-0 bg-transparent backdrop-blur-sm"
           />
 
           {/* Modal */}
@@ -36,10 +37,10 @@ export default function DeletePlaylistModal({
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
-            className="relative w-full max-w-sm mx-4 bg-gray-900/95 backdrop-blur-xl border border-red-700/50 rounded-lg shadow-2xl p-6"
+            className="relative w-full max-w-sm mx-4 bg-transparent backdrop-blur-lg border border-red-700/50 rounded-sm shadow-2xl p-6"
           >
             <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 bg-red-900/30 rounded-lg">
+              <div className="p-2 rounded-lg">
                 <Trash2 className="w-6 h-6 text-red-500" />
               </div>
               <h2 className="text-lg font-bold text-red-400">
@@ -54,19 +55,24 @@ export default function DeletePlaylistModal({
             </p>
 
             <div className="flex justify-end gap-3">
-              <button
-                onClick={onClose}
-                className="px-4 py-2 text-sm bg-gray-700/50 hover:bg-gray-700 text-gray-300 hover:text-white rounded-lg transition-colors"
-              >
-                Cancel
-              </button>
-              <button
+              <Button
+                  type="button"
+                  variant="outline"
+                  className="rounded-full border-purple-500/30 bg-transparent text-white hover:bg-purple-500/40 hover:text-white cursor-pointer"
+                  size="lg"
+                  onClick={onClose}
+                >
+                  Cancel
+                </Button>
+              <Button
+                variant="outline"
+                size="lg"
                 onClick={onDelete}
                 disabled={isLoading}
-                className="px-4 py-2 text-sm bg-red-600 hover:bg-red-500 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="rounded-full border-purple-500/30 bg-transparent text-white hover:bg-rose-600 hover:text-white cursor-pointer"
               >
                 {isLoading ? "Deleting..." : "Delete"}
-              </button>
+              </Button>
             </div>
           </motion.div>
         </div>
