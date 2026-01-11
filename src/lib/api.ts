@@ -187,6 +187,16 @@ export const playlistAPI = {
       method: 'DELETE',
     });
   },
+
+  /**
+   * Update a playlist
+   */
+  update: async (id: string, data: { name: string; description: string }) => {
+    return apiFetch(`/playlist/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  },
 };
 
 export { API_BASE_URL };

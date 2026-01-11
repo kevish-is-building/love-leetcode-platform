@@ -9,6 +9,7 @@ import { useAuthStore } from "../../store/useAuthStore";
 import LogoutButton from "./LogoutButton";
 import GlassSurface from "./GlassSurface";
 import Loader from "../ui/loader";
+import { Button } from "../ui/button";
 
 const Navbar = () => {
   const { user, isAuthenticated, isLoading, logout } = useAuthStore();
@@ -38,29 +39,21 @@ const Navbar = () => {
   const navLinks = [
     { name: "Problems", path: "/problems", isProtected: true },
     { name: "Learn", path: "/learn", isProtected: false },
-    { name: "Contest", path: "/contest", isProtected: false },
+    { name: "Playlists", path: "/playlists", isProtected: false },
     { name: "Contact Us", path: "/contact", isProtected: false },
     { name: "Dashboard", path: "/dashboard", isProtected: true },
   ];
 
   const adminNavLinks = [
-    { name: "Problems", path: "/problems" },
-    { name: "Learn", path: "/learn" },
-    { name: "Contest", path: "/contest" },
-    { name: "Contact Us", path: "/contact" },
-    { name: "Add problem", path: "/add-problem" },
-    { name: "Dashboard", path: "/dashboard" },
+    ...navLinks,
+    { name: "Add problem", path: "/add-problem", isProtected: true },
   ];
 
   return (
     <>
       <nav className={`fixed w-full z-50 transition-all duration-300 p-0 m-0`}>
         <div className="relative w-full flex justify-center">
-          <GlassSurface
-            width="100%"
-            height="100%"
-            borderRadius={16}
-          >
+          <GlassSurface width="100%" height="100%" borderRadius={8}>
             <div
               className={`transition-all duration-700 ease-in-out transform-gpu ${
                 scrolled
@@ -111,31 +104,24 @@ const Navbar = () => {
 
                   <div className="hidden md:block">
                     <div className="ml-10 flex items-center space-x-4">
-                      {navLinks.map((link) => (
-                        <Link
-                          key={link.name}
-                          href={link.isProtected && !isAuthenticated ? "/auth" : link.path}
-                          className={`px-3 py-2 text-sm font-medium transition-colors duration-200  ${
-                            pathname === link.path
-                              ? "text-lime-400"
-                              : "text-gray-300 hover:text-lime-400"
-                          }`}
-                        >
-                          {link.name}
-                        </Link>
-                      ))}
-                      {user?.role === "ADMIN" && (
-                        <Link
-                          key={"Add problem"}
-                          href="/add-problem"
-                          className={`px-3 py-2 text-sm font-medium transition-colors duration-200 hover: ${
-                            pathname === "/add-problem"
-                              ? "text-lime-400"
-                              : "text-gray-300 hover:text-lime-400"
-                          }`}
-                        >
-                          Add Problem
-                        </Link>
+                      {(user?.role === "ADMIN" ? adminNavLinks : navLinks).map(
+                        (link) => (
+                          <Link
+                            key={link.name}
+                            href={
+                              link.isProtected && !isAuthenticated
+                                ? "/auth"
+                                : link.path
+                            }
+                            className={`px-3 py-2 text-sm font-medium transition-colors duration-200  ${
+                              pathname === link.path
+                                ? "text-lime-400"
+                                : "text-gray-300 hover:text-lime-400"
+                            }`}
+                          >
+                            {link.name}
+                          </Link>
+                        )
                       )}
 
                       {isLoading ? (
@@ -158,19 +144,23 @@ const Navbar = () => {
                               <User size={20} />
                             )}
                           </Link>
-                          <button
+                          <Button
+                          variant="outline"
                             onClick={logout}
-                            className="flex items-center px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors cursor-pointer"
+                            className="rounded-full border-purple-500/30 bg-transparent text-white hover:bg-rose-600 hover:text-white cursor-pointer"
                           >
                             Logout
-                          </button>
+                          </Button>
                         </>
                       ) : (
-                        <Link
-                          href="/auth"
-                          className="px-4 py-2 text-sm font-medium text-white border border-indigo-500 hover:bg-indigo-700/60 rounded-lg transition-colors"
-                        >
-                          Login / Signup
+                        <Link href="/auth" className="cursor-pointer">
+                          <Button
+                            variant="outline"
+                            className="rounded-full border-purple-500/30 bg-transparent text-white hover:bg-purple-500/10 hover:text-white cursor-pointer"
+                            size="lg"
+                          >
+                            Login / Sign Up
+                          </Button>
                         </Link>
                       )}
                     </div>

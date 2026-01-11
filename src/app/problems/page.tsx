@@ -166,15 +166,15 @@ export default function ProblemsPage() {
 
   const isAdmin = user?.role === "ADMIN";
 
-  if (!user) {
-    return (
-      <ProtectedRoute>
-        <div className="min-h-screen bg-transparent flex items-center justify-center">
-          <Loader />
-        </div>
-      </ProtectedRoute>
-    );
-  }
+  // if (!user) {
+  //   return (
+  //     <ProtectedRoute>
+  //       <div className="min-h-screen bg-transparent flex items-center justify-center">
+  //         <Loader />
+  //       </div>
+  //     </ProtectedRoute>
+  //   );
+  // }
 
   if (problemsLoading) {
     return <div className="min-h-screen bg-transparent flex items-center justify-center">

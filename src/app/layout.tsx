@@ -36,9 +36,9 @@ export default function RootLayout({
               color: '#fff',
               border: '1px solid rgba(255, 255, 255, 0.1)',
               backdropFilter: 'blur(16px)',
-              boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
-              borderRadius: '12px',
-              padding: '16px',
+              boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.35)',
+              borderRadius: '0.5rem',
+              padding: '8px',
               fontWeight: '400',
             },
             success: {

@@ -13,6 +13,7 @@ interface PlaylistState {
   addProblemToPlaylist: (playlistId: string, problemIds: string[]) => Promise<void>;
   removeProblemFromPlaylist: (playlistId: string, problemIds: string[]) => Promise<void>;
   deletePlaylist: (playlistId: string) => Promise<void>;
+  updatePlaylist: (playlistId: string, data: { name: string; description: string }) => Promise<void>;
 }
 
 export const usePlaylistStore = create<PlaylistState>((set, get) => ({
@@ -126,6 +127,26 @@ export const usePlaylistStore = create<PlaylistState>((set, get) => ({
     } catch (error: any) {
       console.error("Error deleting playlist:", error);
       toast.error(error.message || "Failed to delete playlist");
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  updatePlaylist: async (playlistId: string, data: { name: string; description: string }) => {
+    try {
+      set({ isLoading: true });
+      await playlistAPI.update(playlistId, data);
+
+      set((state: any) => ({
+        playlists: state.playlists.map((p: any) =>
+          p.id === playlistId ? { ...p, ...data } : p
+        ),
+      }));
+
+      toast.success("Playlist updated successfully");
+    } catch (error: any) {
+      console.error("Error updating playlist:", error);
+      toast.error(error.message || "Failed to update playlist");
     } finally {
       set({ isLoading: false });
     }
