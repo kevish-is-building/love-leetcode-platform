@@ -1,18 +1,21 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Plus, Globe, Lock } from "lucide-react";
+import { Plus, Globe, Lock, PlusIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { usePlaylistStore } from "@/store/usePlaylistStore";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useProblemStore } from "@/store/useProblemStore";
 import {
   PlaylistCard,
   CreatePlaylistModal,
   DeletePlaylistModal,
   EditPlaylistModal,
+  AddProblemModal,
 } from "@/components/playlist";
 import Loader from "@/components/ui/loader";
+import { Button } from "@/components/ui/button";
 
 export default function PlaylistsPage() {
   const { user } = useAuthStore();
@@ -24,7 +27,9 @@ export default function PlaylistsPage() {
     deletePlaylist,
     updatePlaylist,
     removeProblemFromPlaylist,
+    addProblemToPlaylist,
   } = usePlaylistStore();
+  const { problems: allProblems, fetchProblems, isLoading: isLoadingProblems } = useProblemStore();
 
   // View state: "personal" or "public"
   const [viewMode, setViewMode] = useState<"personal" | "public">("personal");
@@ -33,6 +38,7 @@ export default function PlaylistsPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showAddProblemModal, setShowAddProblemModal] = useState(false);
   const [selectedPlaylist, setSelectedPlaylist] = useState<any>(null);
 
   // Fetch playlists on mount
@@ -104,6 +110,26 @@ export default function PlaylistsPage() {
     [removeProblemFromPlaylist]
   );
 
+  // Handle add problem to playlist
+  const handleAddProblemClick = useCallback(
+    (playlist: any) => {
+      setSelectedPlaylist(playlist);
+      setShowAddProblemModal(true);
+      // Fetch problems when modal opens
+      fetchProblems();
+    },
+    [fetchProblems]
+  );
+
+  const handleAddProblem = useCallback(
+    async (playlistId: string, problemId: string) => {
+      await addProblemToPlaylist(playlistId, [problemId]);
+      // Refresh playlists to get updated data
+      await getAllPlaylists();
+    },
+    [addProblemToPlaylist, getAllPlaylists]
+  );
+
   // Filter playlists based on view mode
   const filteredPlaylists = playlists.filter((playlist) => {
     if (viewMode === "personal") {
@@ -147,7 +173,8 @@ export default function PlaylistsPage() {
                 transition={{ delay: 0.4, duration: 0.7, ease: "easeOut" }}
                 className="text-gray-400 text-lg"
               >
-                Organize and track your coding journey with custom problem collections.
+                Organize and track your coding journey with custom problem
+                collections.
               </motion.p>
             </div>
 
@@ -158,19 +185,22 @@ export default function PlaylistsPage() {
               transition={{ delay: 0.5, duration: 0.5 }}
               className="flex items-center gap-3"
             >
-              <button
+              <Button
+                className="group rounded-full border-t border-purple-400 bg-linear-to-b from-purple-700 to-slate-950/80  text-white shadow-lg shadow-purple-600/20 transition-all hover:shadow-purple-600/40 cursor-pointer"
+                size="lg"
                 onClick={() => setShowCreateModal(true)}
-                className="flex items-center gap-2 px-4 py-2.5 bg-purple-600 hover:bg-purple-500 text-white rounded-lg font-medium transition-colors shadow-lg shadow-purple-500/20"
               >
-                <Plus className="w-5 h-5" />
                 Create new playlist
-              </button>
+                <PlusIcon className="transition-transform duration-300 group-hover:rotate-180" />
+              </Button>
 
-              <button
+              <Button
+                variant="outline"
+                className="rounded-full border-purple-500/30 bg-transparent text-white hover:bg-purple-500/10 hover:text-white cursor-pointer"
+                size="lg"
                 onClick={() =>
                   setViewMode(viewMode === "personal" ? "public" : "personal")
                 }
-                className="flex items-center gap-2 px-4 py-2.5 bg-gray-700/50 hover:bg-gray-700 text-gray-300 hover:text-white border border-gray-600/50 rounded-lg font-medium transition-all"
               >
                 {viewMode === "personal" ? (
                   <>
@@ -183,7 +213,7 @@ export default function PlaylistsPage() {
                     Switch to Personal
                   </>
                 )}
-              </button>
+              </Button>
             </motion.div>
           </div>
 
@@ -218,9 +248,11 @@ export default function PlaylistsPage() {
                       name={playlist.name}
                       description={playlist.description}
                       problems={playlist.problems || []}
+                      currentUserId={user?.id}
                       onEdit={() => handleEditClick(playlist)}
                       onDelete={() => handleDeleteClick(playlist)}
                       onRemoveProblem={handleRemoveProblem}
+                      onAddProblem={() => handleAddProblemClick(playlist)}
                     />
                   </motion.div>
                 ))}
@@ -233,8 +265,8 @@ export default function PlaylistsPage() {
               transition={{ duration: 0.5 }}
               className="text-center py-16"
             >
-              <div className="bg-gray-800/30 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-12 max-w-md mx-auto">
-                <div className="w-16 h-16 bg-gray-700/50 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="bg-transparent backdrop-blur-sm border border-gray-700/50 rounded-sm p-8 max-w-md mx-auto">
+                <div className="w-16 h-16 bg-gray-900 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Plus className="w-8 h-8 text-gray-400" />
                 </div>
                 <h3 className="text-xl font-semibold text-white mb-2">
@@ -248,13 +280,14 @@ export default function PlaylistsPage() {
                     : "No public playlists are available at the moment."}
                 </p>
                 {viewMode === "personal" && (
-                  <button
+                  <Button
+                    className="group rounded-full border-t border-purple-400 bg-linear-to-b from-purple-700 to-slate-950/80  text-white shadow-lg shadow-purple-600/20 transition-all hover:shadow-purple-600/40 cursor-pointer"
+                    size="lg"
                     onClick={() => setShowCreateModal(true)}
-                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-purple-600 hover:bg-purple-500 text-white rounded-lg font-medium transition-colors"
                   >
-                    <Plus className="w-5 h-5" />
-                    Create Playlist
-                  </button>
+                    Create new playlist
+                    <PlusIcon className="transition-transform duration-300 group-hover:rotate-180" />
+                  </Button>
                 )}
               </div>
             </motion.div>
@@ -290,6 +323,23 @@ export default function PlaylistsPage() {
         }}
         onSave={handleSaveEdit}
         isLoading={isLoading}
+      />
+
+      <AddProblemModal
+        isOpen={showAddProblemModal}
+        playlistName={selectedPlaylist?.name || ""}
+        playlistId={selectedPlaylist?.id || ""}
+        existingProblemIds={
+          selectedPlaylist?.problems?.map((p: any) => p.id) || []
+        }
+        allProblems={allProblems}
+        currentUserId={user?.id}
+        isLoadingProblems={isLoadingProblems}
+        onClose={() => {
+          setShowAddProblemModal(false);
+          setSelectedPlaylist(null);
+        }}
+        onAddProblem={handleAddProblem}
       />
     </div>
   );

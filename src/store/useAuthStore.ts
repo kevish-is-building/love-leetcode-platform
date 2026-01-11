@@ -130,7 +130,7 @@ export const useAuthStore = create<AuthState>()(
           const userData = await response.json()
           
           set({ 
-            user: userData, 
+            user: userData.data, 
             isAuthenticated: true, 
             isLoading: false 
           })

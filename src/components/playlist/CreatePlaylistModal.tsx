@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "../ui/button";
 
 interface CreatePlaylistModalProps {
   isOpen: boolean;
@@ -44,7 +45,7 @@ export default function CreatePlaylistModal({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={handleClose}
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            className="absolute inset-0 bg-transparent backdrop-blur-xs"
           />
 
           {/* Modal */}
@@ -53,7 +54,7 @@ export default function CreatePlaylistModal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="relative w-full max-w-md mx-4 bg-gray-900/95 backdrop-blur-xl border border-gray-700/50 rounded-lg shadow-2xl"
+            className="relative w-full max-w-md mx-4 bg-transparent backdrop-blur-xl border border-gray-700/50 rounded-sm shadow-2xl"
           >
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-gray-700/50">
@@ -62,10 +63,10 @@ export default function CreatePlaylistModal({
               </h2>
               <button
                 onClick={handleClose}
-                className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-700/50 rounded transition-colors"
+                className="group p-1.5 text-gray-400 hover:text-white hover:bg-gray-700/50 rounded-sm transition-colors cursor-pointer"
                 aria-label="Close modal"
               >
-                <X className="w-5 h-5" />
+                <X className="w-5 h-5 group-hover:text-rose-700 transition-all group-hover:rotate-90" />
               </button>
             </div>
 
@@ -84,7 +85,7 @@ export default function CreatePlaylistModal({
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Enter playlist name"
-                  className="w-full px-3 py-2.5 bg-gray-800/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50 transition-all"
+                  className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600/50 rounded-sm text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/50 focus:ring-0 focus:ring-purple-500/50 transition-all"
                   required
                   autoFocus
                 />
@@ -103,30 +104,31 @@ export default function CreatePlaylistModal({
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Enter playlist description (optional)"
                   rows={3}
-                  className="w-full px-3 py-2.5 bg-gray-800/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50 transition-all resize-none"
+                  className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600/50 rounded-sm text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/50 focus:ring focus:ring-purple-500/50 transition-all resize-none"
                 />
               </div>
 
               {/* Actions */}
               <div className="flex justify-end gap-3 pt-2">
-                <button
+                <Button
                   type="button"
+                  variant="outline"
+                  className="rounded-full border-purple-500/30 bg-transparent text-white hover:bg-purple-500/10 hover:text-white cursor-pointer"
+                  size="lg"
                   onClick={handleClose}
-                  className="px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-700/50 rounded-lg transition-colors"
                 >
                   Cancel
-                </button>
-                <button
+                </Button>
+
+                <Button
                   type="submit"
+                  className="group rounded-full border-t border-purple-400 bg-linear-to-b from-purple-700 to-slate-950/80  text-white shadow-lg shadow-purple-600/20 transition-all hover:shadow-purple-600/40 cursor-pointer"
+                  size="lg"
                   disabled={!name.trim() || isLoading}
-                  className="px-4 py-2 text-sm bg-purple-600 hover:bg-purple-500 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isLoading ? (
                     <span className="flex items-center gap-2">
-                      <svg
-                        className="animate-spin h-4 w-4"
-                        viewBox="0 0 24 24"
-                      >
+                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
                         <circle
                           className="opacity-25"
                           cx="12"
@@ -147,7 +149,7 @@ export default function CreatePlaylistModal({
                   ) : (
                     "Create Playlist"
                   )}
-                </button>
+                </Button>
               </div>
             </form>
           </motion.div>
