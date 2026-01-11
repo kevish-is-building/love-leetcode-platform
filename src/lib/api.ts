@@ -199,4 +199,41 @@ export const playlistAPI = {
   },
 };
 
+// Execute API calls
+export const executeAPI = {
+  /**
+   * Run code with test cases
+   */
+  run: async (data: {
+    code: string;
+    language_id: number;
+    stdin: string[];
+    expected_outputs: string[];
+    id: string;
+    title: string;
+  }) => {
+    return apiFetch('/execute/run', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  /**
+   * Submit code for evaluation
+   */
+  submit: async (data: {
+    code: string;
+    language_id: number;
+    stdin: string[];
+    expected_outputs: string[];
+    id: string;
+    title: string;
+  }) => {
+    return apiFetch('/execute/submit', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+};
+
 export { API_BASE_URL };

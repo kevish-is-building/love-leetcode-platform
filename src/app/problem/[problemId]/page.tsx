@@ -12,15 +12,13 @@ import {
   History,
   Lightbulb,
   MessageSquare,
-  Plus,
   Check,
   X,
 } from "lucide-react";
 import Editor from "@monaco-editor/react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
-import { problemAPI } from "@/lib/api";
+import { problemAPI, executeAPI } from "@/lib/api";
 import Loader from "@/components/ui/loader";
-import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import FuzzyText from "@/components/layout/FuzzyText";
 import { Button } from "@/components/ui/button";
 
@@ -51,10 +49,15 @@ interface Problem {
 }
 
 interface TestResult {
-  passed: boolean;
-  input: string;
-  expected: string;
-  actual: string;
+  testCaseNumber: number;
+  isTestPassed: boolean;
+  stdout: string | null;
+  expected_output: string;
+  stderr: string | null;
+  compile_output: string | null;
+  status: string;
+  memory?: number;
+  time?: number;
 }
 
 type TabType =
@@ -70,6 +73,18 @@ const LANG_MAP: Record<string, string> = {
   java: "java",
   cpp: "cpp",
   c: "c",
+};
+
+// Language ID mapping for Judge0 API
+const getLanguageId = (language: string): number => {
+  const languageIds: Record<string, number> = {
+    javascript: 63,  // Node.js
+    python: 71,      // Python 3
+    java: 62,        // Java
+    cpp: 54,         // C++ (GCC 9.2.0)
+    c: 50,           // C (GCC 9.2.0)
+  };
+  return languageIds[language.toLowerCase()] || 63;
 };
 
 export default function ProblemSolverPage() {
@@ -125,39 +140,69 @@ export default function ProblemSolverPage() {
     }
   }, [problem, language]);
 
-  const handleRun = useCallback(() => {
+  const handleRun = useCallback(async () => {
+    if (!problem || !problem.testCases || problem.testCases.length === 0) {
+      return;
+    }
+
     setIsRunning(true);
     setShowResults(true);
-    setTimeout(() => {
-      const mockResults: TestResult[] = (problem?.testCases || [])
-        .slice(0, 3)
-        .map((tc) => ({
-          passed: Math.random() > 0.3,
-          input: tc.input,
-          expected: tc.output,
-          actual: tc.output,
-        }));
-      setResults(mockResults);
-      setIsRunning(false);
-    }, 1500);
-  }, [problem]);
+    setResults(null);
 
-  const handleSubmit = useCallback(() => {
+    try {
+      const language_id = getLanguageId(language);
+      const stdin = problem.testCases.map((tc) => tc.input);
+      const expected_outputs = problem.testCases.map((tc) => tc.output);
+
+      const response: any = await executeAPI.run({
+        code,
+        language_id,
+        stdin,
+        expected_outputs,
+        id: problemId,
+        title: problem.title,
+      });
+
+      setResults(response.data || response);
+    } catch (error) {
+      console.error("Error running code:", error);
+      setResults([]);
+    } finally {
+      setIsRunning(false);
+    }
+  }, [problem, code, language, problemId]);
+
+  const handleSubmit = useCallback(async () => {
+    if (!problem || !problem.testCases || problem.testCases.length === 0) {
+      return;
+    }
+
     setIsSubmitting(true);
     setShowResults(true);
-    setTimeout(() => {
-      const mockResults: TestResult[] = (problem?.testCases || []).map(
-        (tc) => ({
-          passed: Math.random() > 0.2,
-          input: tc.input,
-          expected: tc.output,
-          actual: tc.output,
-        })
-      );
-      setResults(mockResults);
+    setResults(null);
+
+    try {
+      const language_id = getLanguageId(language);
+      const stdin = problem.testCases.map((tc) => tc.input);
+      const expected_outputs = problem.testCases.map((tc) => tc.output);
+
+      const response: any = await executeAPI.submit({
+        code,
+        language_id,
+        stdin,
+        expected_outputs,
+        id: problemId,
+        title: problem.title,
+      });
+
+      setResults(response.data || response);
+    } catch (error) {
+      console.error("Error submitting code:", error);
+      setResults([]);
+    } finally {
       setIsSubmitting(false);
-    }, 2000);
-  }, [problem]);
+    }
+  }, [problem, code, language, problemId]);
 
   const diffStyle = (d: string) => {
     if (d === "EASY") return "text-green-400 border-green-500/30";
@@ -573,48 +618,83 @@ export default function ProblemSolverPage() {
                               <div
                                 key={i}
                                 className={`p-3 rounded-lg border ${
-                                  r.passed
+                                  r.isTestPassed
                                     ? "bg-green-500/10 border-green-500/30"
                                     : "bg-red-500/10 border-red-500/30"
                                 }`}
                               >
                                 <div className="flex items-center gap-2 mb-2">
-                                  {r.passed ? (
+                                  {r.isTestPassed ? (
                                     <Check className="w-4 h-4 text-green-400" />
                                   ) : (
                                     <X className="w-4 h-4 text-red-400" />
                                   )}
                                   <span
                                     className={`text-sm font-medium ${
-                                      r.passed
+                                      r.isTestPassed
                                         ? "text-green-400"
                                         : "text-red-400"
                                     }`}
                                   >
-                                    Case {i + 1}{" "}
-                                    {r.passed ? "Passed" : "Failed"}
+                                    Case {r.testCaseNumber}{" "}
+                                    {r.isTestPassed ? "Passed" : "Failed"}
+                                  </span>
+                                  <span className="text-xs text-zinc-500 ml-auto">
+                                    {r.status}
                                   </span>
                                 </div>
                                 <div className="text-xs space-y-1">
-                                  <p className="text-zinc-500">
-                                    Input:{" "}
-                                    <code className="text-zinc-300">
-                                      {r.input}
-                                    </code>
-                                  </p>
+                                  {testCases[i] && (
+                                    <p className="text-zinc-500">
+                                      Input:{" "}
+                                      <code className="text-zinc-300">
+                                        {testCases[i].input}
+                                      </code>
+                                    </p>
+                                  )}
                                   <p className="text-zinc-500">
                                     Expected:{" "}
                                     <code className="text-zinc-300">
-                                      {r.expected}
+                                      {r.expected_output}
                                     </code>
                                   </p>
-                                  {!r.passed && (
+                                  {r.stdout !== null && (
                                     <p className="text-zinc-500">
                                       Output:{" "}
-                                      <code className="text-red-300">
-                                        {r.actual}
+                                      <code className={r.isTestPassed ? "text-zinc-300" : "text-red-300"}>
+                                        {r.stdout}
                                       </code>
                                     </p>
+                                  )}
+                                  {r.stderr && (
+                                    <p className="text-zinc-500">
+                                      Error:{" "}
+                                      <code className="text-red-300">
+                                        {r.stderr}
+                                      </code>
+                                    </p>
+                                  )}
+                                  {r.compile_output && (
+                                    <p className="text-zinc-500">
+                                      Compile Error:{" "}
+                                      <code className="text-red-300">
+                                        {r.compile_output}
+                                      </code>
+                                    </p>
+                                  )}
+                                  {(r.time !== undefined || r.memory !== undefined) && (
+                                    <div className="flex gap-4 mt-2 pt-2 border-t border-zinc-700">
+                                      {r.time !== undefined && (
+                                        <span className="text-zinc-400">
+                                          Time: <span className="text-lime-400">{r.time}s</span>
+                                        </span>
+                                      )}
+                                      {r.memory !== undefined && (
+                                        <span className="text-zinc-400">
+                                          Memory: <span className="text-lime-400">{r.memory} KB</span>
+                                        </span>
+                                      )}
+                                    </div>
                                   )}
                                 </div>
                               </div>
