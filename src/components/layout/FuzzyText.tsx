@@ -27,7 +27,7 @@ interface FuzzyTextProps {
 const FuzzyText: React.FC<FuzzyTextProps> = ({
   children,
   fontSize = 'clamp(2rem, 8vw, 8rem)',
-  fontWeight = 900,
+  fontWeight = 800,
   fontFamily = 'inherit',
   color = '#fff',
   enableHover = true,

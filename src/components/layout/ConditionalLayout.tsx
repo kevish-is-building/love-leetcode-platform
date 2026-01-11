@@ -11,6 +11,9 @@ export default function ConditionalLayout() {
   if (pathname === "/auth") {
     return null;
   }
+  if (pathname.startsWith("/problem/")) {
+    return null;
+  }
   
   return (
     <>
@@ -24,6 +27,9 @@ export function ConditionalFooter() {
   
   // Don't show footer on auth page
   if (pathname === "/auth") {
+    return null;
+  }
+  if (pathname.startsWith("/problem/")) {
     return null;
   }
   

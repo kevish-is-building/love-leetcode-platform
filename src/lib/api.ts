@@ -94,7 +94,7 @@ export const problemAPI = {
    * Get problem by ID
    */
   getById: async (id: string) => {
-    return apiFetch(`/problems/${id}`, {
+    return apiFetch(`/problems/get-problem/${id}`, {
       method: 'GET',
     });
   },

@@ -1,0 +1,647 @@
+"use client";
+
+import { useEffect, useState, useCallback } from "react";
+import { useParams, useRouter } from "next/navigation";
+import {
+  ArrowLeft,
+  Play,
+  Send,
+  RotateCcw,
+  FileText,
+  BookOpen,
+  History,
+  Lightbulb,
+  MessageSquare,
+  Star,
+  ChevronLeft,
+  ChevronRight,
+  Plus,
+  Check,
+  X,
+} from "lucide-react";
+import Editor from "@monaco-editor/react";
+import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import { problemAPI } from "@/lib/api";
+import Loader from "@/components/ui/loader";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import FuzzyText from "@/components/layout/FuzzyText";
+
+// Types
+interface TestCase {
+  input: string;
+  output: string;
+}
+
+interface Example {
+  input: string;
+  output: string;
+  explanation?: string;
+}
+
+interface Problem {
+  id: string;
+  title: string;
+  difficulty: "EASY" | "MEDIUM" | "HARD";
+  description?: string;
+  tags?: string[];
+  examples?: Record<string, Example> | Example[];
+  constraints?: string;
+  testCases?: TestCase[];
+  codeSnippets?: Record<string, string>;
+  editorial?: string;
+  hints?: string;
+}
+
+interface TestResult {
+  passed: boolean;
+  input: string;
+  expected: string;
+  actual: string;
+}
+
+type TabType =
+  | "description"
+  | "editorial"
+  | "submissions"
+  | "solutions"
+  | "discussions";
+
+const LANG_MAP: Record<string, string> = {
+  javascript: "javascript",
+  python: "python",
+  java: "java",
+  cpp: "cpp",
+  c: "c",
+};
+
+export default function ProblemSolverPage() {
+  const params = useParams();
+  const router = useRouter();
+  const problemId = params.problemId as string;
+
+  const [problem, setProblem] = useState<Problem | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [code, setCode] = useState("");
+  const [language, setLanguage] = useState("javascript");
+  const [activeTab, setActiveTab] = useState<TabType>("description");
+  const [activeCase, setActiveCase] = useState(0);
+  const [results, setResults] = useState<TestResult[] | null>(null);
+  const [isRunning, setIsRunning] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showResults, setShowResults] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
+
+  useEffect(() => {
+    const fetchProblem = async () => {
+      try {
+        setIsLoading(true);
+        const res: any = await problemAPI.getById(problemId);
+        const data = res.data || res;
+        setProblem(data);
+        if (data.codeSnippets) {
+          const langs = Object.keys(data.codeSnippets);
+          if (langs.length > 0) {
+            setLanguage(langs[0]);
+            setCode(data.codeSnippets[langs[0]] || "");
+          }
+        }
+      } catch {
+        setError("Failed to load problem");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    if (problemId) fetchProblem();
+  }, [problemId]);
+
+  useEffect(() => {
+    if (problem?.codeSnippets?.[language]) {
+      setCode(problem.codeSnippets[language]);
+    }
+  }, [language, problem]);
+
+  const handleReset = useCallback(() => {
+    if (problem?.codeSnippets?.[language]) {
+      setCode(problem.codeSnippets[language]);
+    }
+  }, [problem, language]);
+
+  const handleRun = useCallback(() => {
+    setIsRunning(true);
+    setShowResults(true);
+    setTimeout(() => {
+      const mockResults: TestResult[] = (problem?.testCases || [])
+        .slice(0, 3)
+        .map((tc) => ({
+          passed: Math.random() > 0.3,
+          input: tc.input,
+          expected: tc.output,
+          actual: tc.output,
+        }));
+      setResults(mockResults);
+      setIsRunning(false);
+    }, 1500);
+  }, [problem]);
+
+  const handleSubmit = useCallback(() => {
+    setIsSubmitting(true);
+    setShowResults(true);
+    setTimeout(() => {
+      const mockResults: TestResult[] = (problem?.testCases || []).map(
+        (tc) => ({
+          passed: Math.random() > 0.2,
+          input: tc.input,
+          expected: tc.output,
+          actual: tc.output,
+        })
+      );
+      setResults(mockResults);
+      setIsSubmitting(false);
+    }, 2000);
+  }, [problem]);
+
+  const diffStyle = (d: string) => {
+    if (d === "EASY") return "text-green-400 border-green-500/30";
+    if (d === "MEDIUM") return "text-yellow-400 border-yellow-500/30";
+    if (d === "HARD") return "text-red-400 border-red-500/30";
+    return "text-zinc-400 border-zinc-500/30";
+  };
+
+  const getExamples = (ex: Problem["examples"]): Example[] => {
+    if (!ex) return [];
+    if (Array.isArray(ex)) return ex;
+    return Object.values(ex).filter((e) => e.input);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="h-screen bg-transparent flex items-center justify-center">
+        <Loader />
+      </div>
+    );
+  }
+
+  if (error || !problem) {
+    return (
+      <div className="h-screen bg-transparent flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-xl font-bold text-red-400 mb-4">
+            {error || "Problem not found"}
+          </h2>
+          <button
+            onClick={() => router.push("/problems")}
+            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg"
+          >
+            Back to Problems
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const testCases = problem.testCases || [];
+  const examples = getExamples(problem.examples);
+  const tabs = [
+    { id: "description", icon: FileText, label: "Description" },
+    { id: "editorial", icon: BookOpen, label: "Editorial" },
+    { id: "submissions", icon: History, label: "Submissions" },
+    { id: "solutions", icon: Lightbulb, label: "Solutions" },
+    { id: "discussions", icon: MessageSquare, label: "AI Discussions" },
+  ];
+
+  return (
+    <div className="h-screen bg-transparent flex flex-col overflow-hidden">
+      {/* Header */}
+      <header className="h-11 bg-transparent border-b border-zinc-700 px-4 flex items-center justify-between shrink-0">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => router.back()}
+            className="flex items-center gap-1.5 text-zinc-400 hover:text-white text-sm cursor-pointer"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span className="hidden sm:inline">Problem :</span>
+            <span className="truncate max-w-40">{problem.title}</span>
+          </button>
+        </div>
+      </header>
+
+      {/* Main */}
+      <div className="flex-1 overflow-hidden">
+        <PanelGroup direction="horizontal">
+          {/* Left Panel */}
+          <Panel defaultSize={40} minSize={25}>
+            <div className="h-full flex flex-col bg-transparent">
+              <div className="flex border-b border-zinc-800 overflow-x-auto shrink-0">
+                {tabs.map((t) => (
+                  <button
+                    key={t.id}
+                    onClick={() => setActiveTab(t.id as TabType)}
+                    className={`flex items-center gap-1.5 px-3 py-2 text-xs font-medium whitespace-nowrap border-b-2 cursor-pointer ${
+                      activeTab === t.id
+                        ? "border-lime-600 text-lime-400 bg-zinc-800/50"
+                        : "border-transparent text-zinc-500 hover:text-zinc-300"
+                    }`}
+                  >
+                    <t.icon className="w-3.5 h-3.5" />
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-4">
+                {activeTab === "description" && (
+                  <div className="space-y-5">
+                    <div>
+                      <h1 className="text-lg font-bold text-white mb-2">
+                        {problem.title}
+                      </h1>
+                      <div className="flex flex-wrap gap-2">
+                        <span
+                          className={`px-2 py-0.5 rounded text-xs font-semibold border ${diffStyle(
+                            problem.difficulty
+                          )}`}
+                        >
+                          {problem.difficulty}
+                        </span>
+                      </div>
+                      {problem.tags
+                        ?.slice(0, problem.tags.length - 1)
+                        .map((tag, i) => (
+                          <span
+                            key={i}
+                            className="px-2 py-0.5 border border-zinc-600 text-zinc-400 text-xs rounded mr-1"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                    </div>
+
+                    <div>
+                      <h3 className="text-sm font-semibold text-zinc-300 mb-2">
+                        Description
+                      </h3>
+                      <p className="text-sm text-zinc-400 leading-relaxed whitespace-pre-line">
+                        {problem.description}
+                      </p>
+                    </div>
+
+                    {examples.length > 0 && (
+                      <div>
+                        <h3 className="text-sm font-semibold text-zinc-300 mb-2">
+                          Example
+                        </h3>
+                        {examples.map((ex, i) => (
+                          <div
+                            key={i}
+                            className="mb-3 border border-zinc-700 rounded-lg p-3 space-y-2"
+                          >
+                            <div className="">
+                              <span className="text-xs text-zinc-500">
+                                Input:
+                              </span>
+                              <code className="block mt-0.5 text-sm text-zinc-300 font-mono">
+                                {ex.input}
+                              </code>
+                            </div>
+                            <div>
+                              <span className="text-xs text-zinc-500">
+                                Output:
+                              </span>
+                              <code className="block mt-0.5 text-sm text-zinc-300 font-mono">
+                                {ex.output}
+                              </code>
+                            </div>
+                            {ex.explanation && (
+                              <div>
+                                <span className="text-xs text-zinc-500">
+                                  Explanation:
+                                </span>
+                                <p className="mt-0.5 text-sm text-zinc-400">
+                                  {ex.explanation}
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {problem.constraints && (
+                      <div>
+                        <h3 className="text-sm font-semibold text-zinc-300 mb-2">
+                          Constraints
+                        </h3>
+                        <ul className="space-y-1">
+                          {problem.constraints.split("\n").map((c, i) => (
+                            <li
+                              key={i}
+                              className="text-sm text-zinc-400 flex gap-2"
+                            >
+                              <span className="text-lime-400">•</span>
+                              <code className="text-zinc-300">{c}</code>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {activeTab === "editorial" && (
+                  <div className="text-sm text-zinc-400">
+                    {problem.editorial ? (
+                      <div className="whitespace-pre-line">
+                        {problem.editorial}
+                      </div>
+                    ) : (
+                      <p className="text-center py-8">
+                        No editorial available.
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {activeTab === "submissions" && (
+                  <p className="text-sm text-zinc-500 text-center py-8">
+                    No submissions yet.
+                  </p>
+                )}
+
+                {activeTab === "solutions" && (
+                  <div className="flex items-center justify-center">
+                    <FuzzyText
+                      fontSize="clamp(1rem, 4vw, 4rem)"
+                      fontWeight={800}
+                      color="#fff"
+                      baseIntensity={0.2}
+                      hoverIntensity={0.6}
+                      glitchMode={true}
+                      glitchInterval={2000}
+                      glitchDuration={200}
+                      // gradient={['#8B5CF6', '#3B82F6', '#06B6D4']}
+                      className="mb-4"
+                    >
+                      Coming Soon
+                    </FuzzyText>
+                  </div>
+                )}
+
+                {activeTab === "discussions" && (
+                  <div className="flex items-center justify-center">
+                    <FuzzyText
+                      fontSize="clamp(1rem, 4vw, 4rem)"
+                      fontWeight={800}
+                      color="#fff"
+                      baseIntensity={0.2}
+                      hoverIntensity={0.6}
+                      glitchMode={true}
+                      glitchInterval={2000}
+                      glitchDuration={200}
+                      // gradient={['#8B5CF6', '#3B82F6', '#06B6D4']}
+                      className="mb-4"
+                    >
+                      Coming Soon
+                    </FuzzyText>
+                  </div>
+                )}
+              </div>
+            </div>
+          </Panel>
+
+          <PanelResizeHandle className="w-1 bg-zinc-800 hover:bg-orange-500/50 transition-colors" />
+
+          {/* Right Panel */}
+          <Panel defaultSize={60} minSize={40}>
+            <PanelGroup direction="vertical">
+              {/* Editor */}
+              <Panel defaultSize={65} minSize={30}>
+                <div className="h-full flex flex-col bg-zinc-900">
+                  <div className="h-10 px-3 flex items-center justify-between border-b border-zinc-800 shrink-0">
+                    <span className="text-xs text-zinc-400">Code Editor</span>
+                    <div className="flex items-center gap-2">
+                      <select
+                        value={language}
+                        onChange={(e) => setLanguage(e.target.value)}
+                        className="bg-zinc-800 text-zinc-300 text-xs px-2 py-1 rounded border border-zinc-700 focus:outline-none"
+                      >
+                        {Object.keys(
+                          problem.codeSnippets || { javascript: "" }
+                        ).map((l) => (
+                          <option key={l} value={l}>
+                            {l.charAt(0).toUpperCase() + l.slice(1)}
+                          </option>
+                        ))}
+                      </select>
+                      <button
+                        onClick={handleReset}
+                        className="p-1.5 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded"
+                        title="Reset"
+                      >
+                        <RotateCcw className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="flex-1">
+                    <Editor
+                      height="100%"
+                      language={LANG_MAP[language] || "javascript"}
+                      theme="vs-dark"
+                      value={code}
+                      onChange={(v) => setCode(v || "")}
+                      options={{
+                        minimap: { enabled: false },
+                        fontSize: 14,
+                        lineNumbers: "on",
+                        scrollBeyondLastLine: false,
+                        automaticLayout: true,
+                        tabSize: 2,
+                        padding: { top: 12 },
+                      }}
+                    />
+                  </div>
+
+                  <div className="h-11 px-3 flex items-center justify-end gap-2 border-t border-zinc-800 shrink-0">
+                    <button
+                      onClick={handleRun}
+                      disabled={isRunning || isSubmitting}
+                      className="flex items-center gap-1.5 px-4 py-1.5 bg-zinc-700 hover:bg-zinc-600 text-white text-sm rounded disabled:opacity-50"
+                    >
+                      {isRunning ? (
+                        <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      ) : (
+                        <Play className="w-3.5 h-3.5" />
+                      )}
+                      Run
+                    </button>
+                    <button
+                      onClick={handleSubmit}
+                      disabled={isRunning || isSubmitting}
+                      className="flex items-center gap-1.5 px-4 py-1.5 bg-green-600 hover:bg-green-500 text-white text-sm rounded disabled:opacity-50"
+                    >
+                      {isSubmitting ? (
+                        <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      ) : (
+                        <Send className="w-3.5 h-3.5" />
+                      )}
+                      Submit
+                    </button>
+                  </div>
+                </div>
+              </Panel>
+
+              <PanelResizeHandle className="h-1 bg-zinc-800 hover:bg-orange-500/50 transition-colors" />
+
+              {/* Test Cases */}
+              <Panel defaultSize={35} minSize={20}>
+                <div className="h-full flex flex-col bg-zinc-900/80">
+                  <div className="h-10 px-3 flex items-center gap-2 border-b border-zinc-800 shrink-0">
+                    <button
+                      onClick={() => setShowResults(false)}
+                      className={`px-2 py-1 text-xs rounded ${
+                        !showResults
+                          ? "bg-zinc-700 text-white"
+                          : "text-zinc-400 hover:text-white"
+                      }`}
+                    >
+                      Test Cases
+                    </button>
+                    <button
+                      onClick={() => setShowResults(true)}
+                      className={`px-2 py-1 text-xs rounded ${
+                        showResults
+                          ? "bg-zinc-700 text-white"
+                          : "text-zinc-400 hover:text-white"
+                      }`}
+                    >
+                      Test Results
+                    </button>
+                  </div>
+
+                  <div className="flex-1 overflow-y-auto p-3">
+                    {!showResults ? (
+                      <div>
+                        <div className="flex items-center gap-2 mb-3 flex-wrap">
+                          {testCases.slice(0, 3).map((_, i) => (
+                            <button
+                              key={i}
+                              onClick={() => setActiveCase(i)}
+                              className={`px-3 py-1 text-xs rounded ${
+                                activeCase === i
+                                  ? "bg-orange-500/20 text-orange-400 border border-orange-500/30"
+                                  : "bg-zinc-800 text-zinc-400 hover:text-white"
+                              }`}
+                            >
+                              Case {i + 1}
+                            </button>
+                          ))}
+                          <button className="p-1 text-zinc-500 hover:text-white">
+                            <Plus className="w-4 h-4" />
+                          </button>
+                        </div>
+                        {testCases[activeCase] && (
+                          <div className="space-y-3">
+                            <div>
+                              <label className="text-xs text-zinc-500 block mb-1">
+                                Input
+                              </label>
+                              <div className="bg-zinc-800 rounded p-2">
+                                <code className="text-sm text-zinc-300 font-mono">
+                                  {testCases[activeCase].input}
+                                </code>
+                              </div>
+                            </div>
+                            <div>
+                              <label className="text-xs text-zinc-500 block mb-1">
+                                Expected Output
+                              </label>
+                              <div className="bg-zinc-800 rounded p-2">
+                                <code className="text-sm text-zinc-300 font-mono">
+                                  {testCases[activeCase].output}
+                                </code>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div>
+                        {results ? (
+                          <div className="space-y-2">
+                            {results.map((r, i) => (
+                              <div
+                                key={i}
+                                className={`p-3 rounded-lg border ${
+                                  r.passed
+                                    ? "bg-green-500/10 border-green-500/30"
+                                    : "bg-red-500/10 border-red-500/30"
+                                }`}
+                              >
+                                <div className="flex items-center gap-2 mb-2">
+                                  {r.passed ? (
+                                    <Check className="w-4 h-4 text-green-400" />
+                                  ) : (
+                                    <X className="w-4 h-4 text-red-400" />
+                                  )}
+                                  <span
+                                    className={`text-sm font-medium ${
+                                      r.passed
+                                        ? "text-green-400"
+                                        : "text-red-400"
+                                    }`}
+                                  >
+                                    Case {i + 1}{" "}
+                                    {r.passed ? "Passed" : "Failed"}
+                                  </span>
+                                </div>
+                                <div className="text-xs space-y-1">
+                                  <p className="text-zinc-500">
+                                    Input:{" "}
+                                    <code className="text-zinc-300">
+                                      {r.input}
+                                    </code>
+                                  </p>
+                                  <p className="text-zinc-500">
+                                    Expected:{" "}
+                                    <code className="text-zinc-300">
+                                      {r.expected}
+                                    </code>
+                                  </p>
+                                  {!r.passed && (
+                                    <p className="text-zinc-500">
+                                      Output:{" "}
+                                      <code className="text-red-300">
+                                        {r.actual}
+                                      </code>
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-sm text-zinc-500 text-center py-4">
+                            Run your code to see results
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </Panel>
+            </PanelGroup>
+          </Panel>
+        </PanelGroup>
+      </div>
+    </div>
+  );
+}
+
+// export default function Page() {
+//   return (
+//     <ProtectedRoute>
+//       <ProblemSolverPage />
+//     </ProtectedRoute>
+//   );
+// }
