@@ -14,60 +14,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useProblemStore } from "@/store/useProblemStore";
 import Loader  from "@/components/ui/loader";
-import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
-import { Router } from "next/router";
+import ConfirmDeleteModal from "@/components/problem/ConfirmDeleteModal";
+import { AddProblemToPlaylistModal } from "@/components/playlist";
 
-// Types
-interface ConfirmDeleteModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onDelete: () => void;
-}
-
-// Confirm Delete Modal Component
-function ConfirmDeleteModal({
-  isOpen,
-  onClose,
-  onDelete,
-}: ConfirmDeleteModalProps) {
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.9 }}
-        className="bg-zinc-900 border border-red-700 rounded-lg shadow-xl p-6 w-full max-w-xs relative"
-      >
-        <div className="flex items-center gap-3 mb-4">
-          <TrashIcon className="w-7 h-7 text-red-500" />
-          <span className="text-lg font-bold text-red-400">
-            Delete Problem?
-          </span>
-        </div>
-        <p className="text-sm text-red-300 mb-6">
-          Are you sure you want to delete this problem? This action cannot be
-          undone.
-        </p>
-        <div className="flex justify-end gap-2">
-          <button
-            onClick={onClose}
-            className="px-4 py-1 rounded bg-zinc-800 text-zinc-300 hover:bg-zinc-700 text-sm transition-colors"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={onDelete}
-            className="px-4 py-1 rounded bg-red-600 text-white font-semibold hover:bg-red-700 text-sm shadow transition-colors"
-          >
-            Delete Now
-          </button>
-        </div>
-      </motion.div>
-    </div>
-  );
-}
 
 // Main Problems Page Component
 export default function ProblemsPage() {
@@ -79,6 +28,9 @@ export default function ProblemsPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteProblemId, setDeleteProblemId] = useState<string | null>(null);
+  const [showAddToPlaylistModal, setShowAddToPlaylistModal] = useState(false);
+  const [selectedProblemId, setSelectedProblemId] = useState<string | null>(null);
+  const [selectedProblemTitle, setSelectedProblemTitle] = useState<string>("");
 
   // Fetch problems on mount
   useEffect(() => {
@@ -145,9 +97,10 @@ export default function ProblemsPage() {
   }, []);
 
   // Bookmark handler
-  const handleAddToPlaylist = useCallback((problemId: string) => {
-    // TODO: Implement add to playlist functionality
-    console.log("Add to playlist:", problemId);
+  const handleAddToPlaylist = useCallback((problemId: string, problemTitle: string) => {
+    setSelectedProblemId(problemId);
+    setSelectedProblemTitle(problemTitle);
+    setShowAddToPlaylistModal(true);
   }, []);
 
   // Difficulty color helper - memoized
@@ -282,7 +235,7 @@ export default function ProblemsPage() {
                           <td className="px-6 py-5 whitespace-nowrap">
                             <button
                               className="text-purple-400 hover:text-purple-300 hover:scale-110 transition-all duration-300 cursor-pointer"
-                              onClick={() => handleAddToPlaylist(problem.id)}
+                              onClick={() => handleAddToPlaylist(problem.id, problem.title)}
                               aria-label="Add to playlist"
                             >
                               <Bookmark className="w-5 h-5" />
@@ -404,6 +357,16 @@ export default function ProblemsPage() {
           />
         )}
       </AnimatePresence>
+
+      {/* Add to Playlist Modal */}
+      {selectedProblemId && (
+        <AddProblemToPlaylistModal
+          isOpen={showAddToPlaylistModal}
+          onClose={() => setShowAddToPlaylistModal(false)}
+          problemId={selectedProblemId}
+          problemTitle={selectedProblemTitle}
+        />
+      )}
     </div>
   );
 }
