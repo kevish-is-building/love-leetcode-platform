@@ -96,11 +96,11 @@ const LANG_MAP: Record<string, string> = {
 // Language ID mapping for Judge0 API
 const getLanguageId = (language: string): number => {
   const languageIds: Record<string, number> = {
-    javascript: 63,  // Node.js
-    python: 71,      // Python 3
-    java: 62,        // Java
-    cpp: 54,         // C++ (GCC 9.2.0)
-    c: 50,           // C (GCC 9.2.0)
+    javascript: 63, // Node.js
+    python: 71, // Python 3
+    java: 62, // Java
+    cpp: 54, // C++ (GCC 9.2.0)
+    c: 50, // C (GCC 9.2.0)
   };
   return languageIds[language.toLowerCase()] || 63;
 };
@@ -124,7 +124,8 @@ export default function ProblemSolverPage() {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [isLoadingSubmissions, setIsLoadingSubmissions] = useState(false);
-  const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
+  const [selectedSubmission, setSelectedSubmission] =
+    useState<Submission | null>(null);
   const [showCodeModal, setShowCodeModal] = useState(false);
 
   useEffect(() => {
@@ -267,19 +268,27 @@ export default function ProblemSolverPage() {
     if (diffInHours < 1) {
       return "Just now";
     } else if (diffInHours < 24) {
-      return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`;
+      return `${diffInHours} hour${diffInHours > 1 ? "s" : ""} ago`;
     } else if (diffInDays < 30) {
-      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      return date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
     } else {
-      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      return date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
     }
   };
 
   const getStatusStyle = (status?: string) => {
-    if (status?.toLowerCase().includes('accept')) {
-      return "text-green-400 bg-green-500/10";
+    if (status?.toLowerCase().includes("accept")) {
+      return "text-green-400 border border-green-500/30";
     }
-    return "text-red-400 bg-red-500/10";
+    return "text-red-400 border border-red-500/30";
   };
 
   const handleViewCode = (submission: Submission) => {
@@ -488,22 +497,22 @@ export default function ProblemSolverPage() {
                           <table className="w-full">
                             <thead>
                               <tr className="border-b border-zinc-700">
-                                <th className="text-left py-3 px-4 text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+                                <th className="text-left py-3 px-4 text-xs font-semibold text-white uppercase tracking-wider">
                                   Status
                                 </th>
-                                <th className="text-left py-3 px-4 text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+                                <th className="text-left py-3 px-4 text-xs font-semibold text-white uppercase tracking-wider">
                                   Language
                                 </th>
-                                <th className="text-left py-3 px-4 text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+                                <th className="text-left py-3 px-4 text-xs font-semibold text-white uppercase tracking-wider">
                                   Runtime
                                 </th>
-                                <th className="text-left py-3 px-4 text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+                                <th className="text-left py-3 px-4 text-xs font-semibold text-white uppercase tracking-wider">
                                   Memory
                                 </th>
-                                <th className="text-left py-3 px-4 text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+                                <th className="text-left py-3 px-4 text-xs font-semibold text-white uppercase tracking-wider">
                                   Submitted At
                                 </th>
-                                <th className="text-left py-3 px-4 text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+                                <th className="text-left py-3 px-4 text-xs font-semibold text-white uppercase tracking-wider">
                                   View Code
                                 </th>
                               </tr>
@@ -516,29 +525,52 @@ export default function ProblemSolverPage() {
                                 >
                                   <td className="py-3 px-4">
                                     <div className="flex items-center gap-2">
-                                      {submission.status?.toLowerCase().includes('accept') ? (
+                                      {/* {submission.status?.toLowerCase().includes('accept') ? (
                                         <Check className="w-4 h-4 text-green-400" />
                                       ) : (
                                         <X className="w-4 h-4 text-red-400" />
-                                      )}
-                                      <span className={`text-sm font-medium px-2 py-1 rounded ${getStatusStyle(submission.status)}`}>
-                                        {submission.status || 'Unknown'}
+                                      )} */}
+                                      <span
+                                        className={`text-sm px-2 py-1 rounded ${getStatusStyle(
+                                          submission.status
+                                        )}`}
+                                      >
+                                        {submission.status || "Unknown"}
                                       </span>
                                     </div>
                                   </td>
                                   <td className="py-3 px-4">
-                                    <span className="text-sm text-white px-2 py-1 bg-zinc-800 rounded">
+                                    <span className="text-sm text-white px-2 py-1 rounded border border-zinc-700">
                                       {submission.language}
                                     </span>
                                   </td>
                                   <td className="py-3 px-4">
                                     <span className="text-sm text-zinc-300">
-                                      {submission.time || '-'}
+                                      {submission.time
+                                        ? `${(
+                                            JSON.parse(submission.time).reduce(
+                                              (a: string, b: string) =>
+                                                Number(a) + Number(b),
+                                              0
+                                            ) /
+                                            JSON.parse(submission.time).length
+                                          ).toFixed(2)} KB`
+                                        : "-"}
                                     </span>
                                   </td>
                                   <td className="py-3 px-4">
                                     <span className="text-sm text-zinc-300">
-                                      {submission.memory || '-'}
+                                      {submission.memory
+                                        ? `${(
+                                            JSON.parse(
+                                              submission.memory
+                                            ).reduce(
+                                              (a: number, b: number) => a + b,
+                                              0
+                                            ) /
+                                            JSON.parse(submission.memory).length
+                                          ).toFixed(2)} KB`
+                                        : "-"}
                                     </span>
                                   </td>
                                   <td className="py-3 px-4">
@@ -551,7 +583,7 @@ export default function ProblemSolverPage() {
                                       variant="outline"
                                       size="sm"
                                       onClick={() => handleViewCode(submission)}
-                                      className="rounded-full border-purple-500/30 bg-transparent text-white hover:bg-purple-500/20 cursor-pointer"
+                                      className="rounded-full border-purple-500/30 bg-transparent text-zinc-200 hover:bg-purple-500/20 hover:text-white cursor-pointer"
                                     >
                                       <FileText className="w-3.5 h-3.5 mr-1" />
                                       View
@@ -562,64 +594,6 @@ export default function ProblemSolverPage() {
                             </tbody>
                           </table>
                         </div>
-                        {/* {submissions.map((submission) => (
-                          <div
-                            key={submission.id}
-                            className="border border-zinc-700 rounded-lg p-4 hover:border-zinc-600 transition-colors"
-                          >
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-4 flex-1">
-                                <div className="flex items-center gap-2 min-w-30">
-                                  {submission.status?.toLowerCase().includes('accept') ? (
-                                    <Check className="w-4 h-4 text-green-400" />
-                                  ) : (
-                                    <X className="w-4 h-4 text-red-400" />
-                                  )}
-                                  <span className={`text-sm font-medium px-2 py-1 rounded ${getStatusStyle(submission.status)}`}>
-                                    {submission.status || 'Unknown'}
-                                  </span>
-                                </div>
-                                
-                                <div className="flex items-center gap-2 min-w-25">
-                                  <span className="text-xs text-zinc-400">Language:</span>
-                                  <span className="text-sm text-white px-2 py-1 bg-zinc-800 rounded">
-                                    {submission.language}
-                                  </span>
-                                </div>
-                                
-                                {submission.time && (
-                                  <div className="flex items-center gap-2">
-                                    <span className="text-xs text-zinc-400">Runtime:</span>
-                                    <span className="text-sm text-zinc-300">{submission.time}</span>
-                                  </div>
-                                )}
-                                
-                                {submission.memory && (
-                                  <div className="flex items-center gap-2">
-                                    <span className="text-xs text-zinc-400">Memory:</span>
-                                    <span className="text-sm text-zinc-300">{submission.memory}</span>
-                                  </div>
-                                )}
-                                
-                                <div className="flex items-center gap-2 ml-auto">
-                                  <span className="text-xs text-zinc-500">
-                                    {formatDate(submission.createdAt)}
-                                  </span>
-                                </div>
-                              </div>
-                              
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleViewCode(submission)}
-                                className="ml-4 rounded-full border-purple-500/30 bg-transparent text-white hover:bg-purple-500/20 cursor-pointer"
-                              >
-                                <FileText className="w-3.5 h-3.5 mr-1" />
-                                View Code
-                              </Button>
-                            </div>
-                          </div>
-                        ))} */}
                       </div>
                     ) : (
                       <p className="text-sm text-zinc-500 text-center py-8">
@@ -878,7 +852,13 @@ export default function ProblemSolverPage() {
                                   {r.stdout !== null && (
                                     <p className="text-zinc-500">
                                       Output:{" "}
-                                      <code className={r.isTestPassed ? "text-zinc-300" : "text-red-300"}>
+                                      <code
+                                        className={
+                                          r.isTestPassed
+                                            ? "text-zinc-300"
+                                            : "text-red-300"
+                                        }
+                                      >
                                         {r.stdout}
                                       </code>
                                     </p>
@@ -899,16 +879,23 @@ export default function ProblemSolverPage() {
                                       </code>
                                     </p>
                                   )}
-                                  {(r.time !== undefined || r.memory !== undefined) && (
+                                  {(r.time !== undefined ||
+                                    r.memory !== undefined) && (
                                     <div className="flex gap-4 mt-2 pt-2 border-t border-zinc-700">
                                       {r.time !== undefined && (
                                         <span className="text-zinc-400">
-                                          Time: <span className="text-lime-400">{r.time}s</span>
+                                          Time:{" "}
+                                          <span className="text-lime-400">
+                                            {r.time}s
+                                          </span>
                                         </span>
                                       )}
                                       {r.memory !== undefined && (
                                         <span className="text-zinc-400">
-                                          Memory: <span className="text-lime-400">{r.memory} KB</span>
+                                          Memory:{" "}
+                                          <span className="text-lime-400">
+                                            {r.memory} KB
+                                          </span>
                                         </span>
                                       )}
                                     </div>
@@ -934,26 +921,41 @@ export default function ProblemSolverPage() {
 
       {/* Code View Modal */}
       {showCodeModal && selectedSubmission && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-zinc-900 border border-zinc-700 rounded-lg w-full max-w-4xl max-h-[90vh] flex flex-col">
-            <div className="flex items-center justify-between p-4 border-b border-zinc-700">
+        <div className="fixed inset-0 bg-transparent backdrop-blur-xs flex items-center justify-center z-50 p-4">
+          <div className="bg-transparent border border-zinc-700 rounded-sm w-full max-w-4xl max-h-[90vh] h-[85vh] flex flex-col">
+            <div className="flex items-center justify-between p-4 border-b border-zinc-700 shrink-0">
               <div>
-                <h2 className="text-lg font-semibold text-white">Submission Code</h2>
+                <h2 className="text-lg font-semibold text-white">
+                  Submission Code
+                </h2>
                 <div className="flex items-center gap-4 mt-2">
-                  <span className={`text-sm px-2 py-1 rounded ${getStatusStyle(selectedSubmission.status)}`}>
-                    {selectedSubmission.status || 'Unknown'}
+                  <span
+                    className={`text-sm px-2 py-1 rounded ${getStatusStyle(
+                      selectedSubmission.status
+                    )}`}
+                  >
+                    {selectedSubmission.status || "Unknown"}
                   </span>
                   <span className="text-sm text-zinc-400">
-                    Language: <span className="text-white">{selectedSubmission.language}</span>
+                    Language:{" "}
+                    <span className="text-white">
+                      {selectedSubmission.language}
+                    </span>
                   </span>
                   {selectedSubmission.time && (
                     <span className="text-sm text-zinc-400">
-                      Runtime: <span className="text-lime-400">{selectedSubmission.time}</span>
+                      Runtime:{" "}
+                      <span className="text-lime-400">
+                        {selectedSubmission.time}
+                      </span>
                     </span>
                   )}
                   {selectedSubmission.memory && (
                     <span className="text-sm text-zinc-400">
-                      Memory: <span className="text-lime-400">{selectedSubmission.memory}</span>
+                      Memory:{" "}
+                      <span className="text-lime-400">
+                        {selectedSubmission.memory}
+                      </span>
                     </span>
                   )}
                 </div>
@@ -965,15 +967,19 @@ export default function ProblemSolverPage() {
                 <X className="w-5 h-5" />
               </button>
             </div>
-            
-            <div className="flex-1 overflow-hidden">
+
+            <div className="flex-1 min-h-0 overflow-hidden">
               <Editor
                 height="100%"
-                language={selectedSubmission.language?.toLowerCase() || "javascript"}
+                language={
+                  selectedSubmission.language?.toLowerCase() || "javascript"
+                }
                 theme="vs-dark"
-                value={typeof selectedSubmission.sourceCode === 'string' 
-                  ? selectedSubmission.sourceCode 
-                  : JSON.stringify(selectedSubmission.sourceCode, null, 2)}
+                value={
+                  typeof selectedSubmission.sourceCode === "string"
+                    ? selectedSubmission.sourceCode
+                    : JSON.stringify(selectedSubmission.sourceCode, null, 2)
+                }
                 options={{
                   readOnly: true,
                   minimap: { enabled: false },
@@ -987,12 +993,12 @@ export default function ProblemSolverPage() {
                 }}
               />
             </div>
-            
-            <div className="p-4 border-t border-zinc-700 flex justify-end gap-2">
+
+            <div className="p-4 border-t border-zinc-700 flex justify-end gap-2 shrink-0">
               <Button
                 variant="outline"
                 onClick={() => setShowCodeModal(false)}
-                className="rounded-full border-zinc-600 bg-transparent text-white hover:bg-zinc-800 cursor-pointer"
+                className="rounded-full border-purple-500/30 bg-transparent text-white hover:bg-purple-500/20 hover:text-white cursor-pointer"
               >
                 Close
               </Button>

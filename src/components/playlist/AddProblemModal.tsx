@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { X, Plus, ArrowUpRight, Check, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "../ui/button";
 
 interface Problem {
   id: string;
@@ -71,8 +72,13 @@ const ProblemRow = ({
             {problem.title}
           </span>
         </Link>
-        <span className={`text-xs shrink-0 ${getDifficultyColor(problem.difficulty)}`}>
-          {problem.difficulty.charAt(0) + problem.difficulty.slice(1).toLowerCase()}
+        <span
+          className={`text-xs shrink-0 ${getDifficultyColor(
+            problem.difficulty
+          )}`}
+        >
+          {problem.difficulty.charAt(0) +
+            problem.difficulty.slice(1).toLowerCase()}
         </span>
       </div>
 
@@ -82,13 +88,13 @@ const ProblemRow = ({
           {visibleTags.map((tag, idx) => (
             <span
               key={`${problem.id}-${tag}-${idx}`}
-              className="px-2 py-0.5 text-xs bg-gray-800 text-gray-400 rounded"
+              className="px-2 py-0.5 text-xs border border-gray-800 text-gray-400 rounded"
             >
               {tag}
             </span>
           ))}
           {remainingCount > 0 && (
-            <span className="px-2 py-0.5 text-xs bg-gray-800 text-gray-500 rounded">
+            <span className="px-2 py-0.5 text-xs border border-gray-800 text-gray-500 rounded">
               +{remainingCount}
             </span>
           )}
@@ -138,7 +144,8 @@ export default function AddProblemModal({
   const availableProblems = useMemo(() => {
     const existingSet = new Set(existingProblemIds);
     return allProblems.filter(
-      (problem) => !existingSet.has(problem.id) && !addedProblems.has(problem.id)
+      (problem) =>
+        !existingSet.has(problem.id) && !addedProblems.has(problem.id)
     );
   }, [allProblems, existingProblemIds, addedProblems]);
 
@@ -171,7 +178,7 @@ export default function AddProblemModal({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+            className="absolute inset-0 bg-transparent backdrop-blur-xs"
           />
 
           {/* Modal */}
@@ -180,7 +187,7 @@ export default function AddProblemModal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
             transition={{ duration: 0.2 }}
-            className="relative w-full max-w-md mx-4 bg-gray-900 border border-gray-800 rounded-lg shadow-2xl max-h-[70vh] flex flex-col"
+            className="relative w-full max-w-xl mx-4 bg-transparent border border-gray-800 rounded-lg shadow-2xl max-h-[70vh] flex flex-col backdrop-blur-lg"
           >
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-gray-800">
@@ -230,12 +237,14 @@ export default function AddProblemModal({
                   ? `${availableProblems.length} available`
                   : "All problems added"}
               </span>
-              <button
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={onClose}
-                className="px-4 py-2 text-sm bg-gray-800 hover:bg-gray-700 text-white rounded transition-colors"
+                className="rounded-full border-purple-500/30 bg-transparent text-zinc-200 hover:bg-purple-500/20 hover:text-white cursor-pointer"
               >
                 Done
-              </button>
+              </Button>
             </div>
           </motion.div>
         </div>
