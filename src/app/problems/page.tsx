@@ -209,14 +209,22 @@ export default function ProblemsPage() {
             Sharpen your coding skills with our curated collection of
             algorithmic challenges.
           </motion.p>
+        {/* Divider */}
+          <motion.div
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: 1 }}
+            transition={{ delay: 0.6, duration: 0.5 }}
+            className="h-px bg-linear-to-r from-transparent via-gray-600 to-transparent mt-6"
+          />
         </motion.div>
+
 
         {/* Problems Table */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7, duration: 0.7 }}
-          className="rounded-sm bg-gray-800/30 backdrop-blur-xl border border-gray-700/50 overflow-hidden shadow-2xl"
+          className="rounded-sm bg-transparent backdrop-blur-xl border border-gray-700/50 overflow-hidden shadow-2xl"
         >
           <div className="overflow-x-auto">
             <table className="min-w-full">
