@@ -236,4 +236,16 @@ export const executeAPI = {
   },
 };
 
+// Submission API calls
+export const submissionAPI = {
+  /**
+   * Get all submissions for a specific problem
+   */
+  getByProblemId: async (problemId: string) => {
+    return apiFetch(`/submission/get-submissions/${problemId}`, {
+      method: 'GET',
+    });
+  },
+};
+
 export { API_BASE_URL };

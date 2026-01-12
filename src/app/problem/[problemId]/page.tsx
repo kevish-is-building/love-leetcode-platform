@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import Editor from "@monaco-editor/react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
-import { problemAPI, executeAPI } from "@/lib/api";
+import { problemAPI, executeAPI, submissionAPI } from "@/lib/api";
 import Loader from "@/components/ui/loader";
 import FuzzyText from "@/components/layout/FuzzyText";
 import { Button } from "@/components/ui/button";
@@ -58,6 +58,24 @@ interface TestResult {
   status: string;
   memory?: number;
   time?: number;
+}
+
+interface Submission {
+  id: string;
+  userId: string;
+  problemId: string;
+  language: string;
+  sourceCode: any;
+  stdin?: string;
+  stdout?: string;
+  stderr?: string;
+  compileOutput?: string;
+  status?: string;
+  memory?: string;
+  time?: string;
+  problemTitle?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 type TabType =
@@ -104,6 +122,10 @@ export default function ProblemSolverPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
+  const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [isLoadingSubmissions, setIsLoadingSubmissions] = useState(false);
+  const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
+  const [showCodeModal, setShowCodeModal] = useState(false);
 
   useEffect(() => {
     const fetchProblem = async () => {
@@ -133,6 +155,24 @@ export default function ProblemSolverPage() {
       setCode(problem.codeSnippets[language]);
     }
   }, [language, problem]);
+
+  useEffect(() => {
+    const fetchSubmissions = async () => {
+      if (activeTab === "submissions" && problemId) {
+        setIsLoadingSubmissions(true);
+        try {
+          const res: any = await submissionAPI.getByProblemId(problemId);
+          setSubmissions(res.data || res || []);
+        } catch (error) {
+          console.error("Failed to fetch submissions:", error);
+          setSubmissions([]);
+        } finally {
+          setIsLoadingSubmissions(false);
+        }
+      }
+    };
+    fetchSubmissions();
+  }, [activeTab, problemId]);
 
   const handleReset = useCallback(() => {
     if (problem?.codeSnippets?.[language]) {
@@ -215,6 +255,36 @@ export default function ProblemSolverPage() {
     if (!ex) return [];
     if (Array.isArray(ex)) return ex;
     return Object.values(ex).filter((e) => e.input);
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInMs = now.getTime() - date.getTime();
+    const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+    if (diffInHours < 1) {
+      return "Just now";
+    } else if (diffInHours < 24) {
+      return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`;
+    } else if (diffInDays < 30) {
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    } else {
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+  };
+
+  const getStatusStyle = (status?: string) => {
+    if (status?.toLowerCase().includes('accept')) {
+      return "text-green-400 bg-green-500/10";
+    }
+    return "text-red-400 bg-red-500/10";
+  };
+
+  const handleViewCode = (submission: Submission) => {
+    setSelectedSubmission(submission);
+    setShowCodeModal(true);
   };
 
   if (isLoading) {
@@ -407,9 +477,156 @@ export default function ProblemSolverPage() {
                 )}
 
                 {activeTab === "submissions" && (
-                  <p className="text-sm text-zinc-500 text-center py-8">
-                    No submissions yet.
-                  </p>
+                  <div>
+                    {isLoadingSubmissions ? (
+                      <div className="flex items-center justify-center py-8">
+                        <Loader />
+                      </div>
+                    ) : submissions.length > 0 ? (
+                      <div className="space-y-2">
+                        <div className="overflow-x-auto">
+                          <table className="w-full">
+                            <thead>
+                              <tr className="border-b border-zinc-700">
+                                <th className="text-left py-3 px-4 text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+                                  Status
+                                </th>
+                                <th className="text-left py-3 px-4 text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+                                  Language
+                                </th>
+                                <th className="text-left py-3 px-4 text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+                                  Runtime
+                                </th>
+                                <th className="text-left py-3 px-4 text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+                                  Memory
+                                </th>
+                                <th className="text-left py-3 px-4 text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+                                  Submitted At
+                                </th>
+                                <th className="text-left py-3 px-4 text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+                                  View Code
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {submissions.map((submission) => (
+                                <tr
+                                  key={submission.id}
+                                  className="border-b border-zinc-800 hover:bg-zinc-800/30 transition-colors"
+                                >
+                                  <td className="py-3 px-4">
+                                    <div className="flex items-center gap-2">
+                                      {submission.status?.toLowerCase().includes('accept') ? (
+                                        <Check className="w-4 h-4 text-green-400" />
+                                      ) : (
+                                        <X className="w-4 h-4 text-red-400" />
+                                      )}
+                                      <span className={`text-sm font-medium px-2 py-1 rounded ${getStatusStyle(submission.status)}`}>
+                                        {submission.status || 'Unknown'}
+                                      </span>
+                                    </div>
+                                  </td>
+                                  <td className="py-3 px-4">
+                                    <span className="text-sm text-white px-2 py-1 bg-zinc-800 rounded">
+                                      {submission.language}
+                                    </span>
+                                  </td>
+                                  <td className="py-3 px-4">
+                                    <span className="text-sm text-zinc-300">
+                                      {submission.time || '-'}
+                                    </span>
+                                  </td>
+                                  <td className="py-3 px-4">
+                                    <span className="text-sm text-zinc-300">
+                                      {submission.memory || '-'}
+                                    </span>
+                                  </td>
+                                  <td className="py-3 px-4">
+                                    <span className="text-xs text-zinc-500">
+                                      {formatDate(submission.createdAt)}
+                                    </span>
+                                  </td>
+                                  <td className="py-3 px-4">
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => handleViewCode(submission)}
+                                      className="rounded-full border-purple-500/30 bg-transparent text-white hover:bg-purple-500/20 cursor-pointer"
+                                    >
+                                      <FileText className="w-3.5 h-3.5 mr-1" />
+                                      View
+                                    </Button>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                        {/* {submissions.map((submission) => (
+                          <div
+                            key={submission.id}
+                            className="border border-zinc-700 rounded-lg p-4 hover:border-zinc-600 transition-colors"
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-4 flex-1">
+                                <div className="flex items-center gap-2 min-w-30">
+                                  {submission.status?.toLowerCase().includes('accept') ? (
+                                    <Check className="w-4 h-4 text-green-400" />
+                                  ) : (
+                                    <X className="w-4 h-4 text-red-400" />
+                                  )}
+                                  <span className={`text-sm font-medium px-2 py-1 rounded ${getStatusStyle(submission.status)}`}>
+                                    {submission.status || 'Unknown'}
+                                  </span>
+                                </div>
+                                
+                                <div className="flex items-center gap-2 min-w-25">
+                                  <span className="text-xs text-zinc-400">Language:</span>
+                                  <span className="text-sm text-white px-2 py-1 bg-zinc-800 rounded">
+                                    {submission.language}
+                                  </span>
+                                </div>
+                                
+                                {submission.time && (
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-xs text-zinc-400">Runtime:</span>
+                                    <span className="text-sm text-zinc-300">{submission.time}</span>
+                                  </div>
+                                )}
+                                
+                                {submission.memory && (
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-xs text-zinc-400">Memory:</span>
+                                    <span className="text-sm text-zinc-300">{submission.memory}</span>
+                                  </div>
+                                )}
+                                
+                                <div className="flex items-center gap-2 ml-auto">
+                                  <span className="text-xs text-zinc-500">
+                                    {formatDate(submission.createdAt)}
+                                  </span>
+                                </div>
+                              </div>
+                              
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleViewCode(submission)}
+                                className="ml-4 rounded-full border-purple-500/30 bg-transparent text-white hover:bg-purple-500/20 cursor-pointer"
+                              >
+                                <FileText className="w-3.5 h-3.5 mr-1" />
+                                View Code
+                              </Button>
+                            </div>
+                          </div>
+                        ))} */}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-zinc-500 text-center py-8">
+                        No submissions yet.
+                      </p>
+                    )}
+                  </div>
                 )}
 
                 {activeTab === "solutions" && (
@@ -714,6 +931,75 @@ export default function ProblemSolverPage() {
           </Panel>
         </PanelGroup>
       </div>
+
+      {/* Code View Modal */}
+      {showCodeModal && selectedSubmission && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-zinc-900 border border-zinc-700 rounded-lg w-full max-w-4xl max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between p-4 border-b border-zinc-700">
+              <div>
+                <h2 className="text-lg font-semibold text-white">Submission Code</h2>
+                <div className="flex items-center gap-4 mt-2">
+                  <span className={`text-sm px-2 py-1 rounded ${getStatusStyle(selectedSubmission.status)}`}>
+                    {selectedSubmission.status || 'Unknown'}
+                  </span>
+                  <span className="text-sm text-zinc-400">
+                    Language: <span className="text-white">{selectedSubmission.language}</span>
+                  </span>
+                  {selectedSubmission.time && (
+                    <span className="text-sm text-zinc-400">
+                      Runtime: <span className="text-lime-400">{selectedSubmission.time}</span>
+                    </span>
+                  )}
+                  {selectedSubmission.memory && (
+                    <span className="text-sm text-zinc-400">
+                      Memory: <span className="text-lime-400">{selectedSubmission.memory}</span>
+                    </span>
+                  )}
+                </div>
+              </div>
+              <button
+                onClick={() => setShowCodeModal(false)}
+                className="text-zinc-400 hover:text-white p-2 hover:bg-zinc-800 rounded transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="flex-1 overflow-hidden">
+              <Editor
+                height="100%"
+                language={selectedSubmission.language?.toLowerCase() || "javascript"}
+                theme="vs-dark"
+                value={typeof selectedSubmission.sourceCode === 'string' 
+                  ? selectedSubmission.sourceCode 
+                  : JSON.stringify(selectedSubmission.sourceCode, null, 2)}
+                options={{
+                  readOnly: true,
+                  minimap: { enabled: false },
+                  fontSize: 14,
+                  lineNumbers: "on",
+                  scrollBeyondLastLine: false,
+                  automaticLayout: true,
+                  tabSize: 2,
+                  wordWrap: "on",
+                  roundedSelection: false,
+                }}
+              />
+            </div>
+            
+            <div className="p-4 border-t border-zinc-700 flex justify-end gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setShowCodeModal(false)}
+                className="rounded-full border-zinc-600 bg-transparent text-white hover:bg-zinc-800 cursor-pointer"
+              >
+                Close
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
