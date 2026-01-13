@@ -427,7 +427,7 @@ export default function AuthPage() {
                     type="button"
                     disabled={isSubmitting}
                     onClick={() => {
-                      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
+                      const apiUrl = process.env.NEXT_API_URL || 'http://localhost:8080/api/v1';
                       window.location.href = `${apiUrl}/auth/google`;
                     }}
                     className="w-full bg-white hover:bg-gray-100 disabled:hover:bg-white text-gray-900 font-medium py-3 transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-60 cursor-pointer"
