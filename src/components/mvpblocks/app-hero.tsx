@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { easeInOut, motion, spring } from 'framer-motion';
-import { Button } from '@/components/ui/button';
+import { useEffect, useState } from "react";
+import { easeInOut, motion, spring } from "framer-motion";
+import { Button } from "@/components/ui/button";
 import {
   ArrowRight,
   Database,
   Sparkles,
   Zap,
   ArrowUpRight,
-} from 'lucide-react';
+} from "lucide-react";
 
 export default function AppHero() {
   // State for animated counters
@@ -21,28 +21,38 @@ export default function AppHero() {
 
   // Animation to count up numbers
   useEffect(() => {
+    const targetUsers = 210;
+    const targetSubmissions = 140;
+    const targetNetworks = 15;
+    const duration = 2000; // 2 seconds for smooth animation
+    const steps = 50; // Number of animation steps
+    const intervalTime = duration / steps;
+
+    let currentStep = 0;
+
     const interval = setInterval(() => {
-      setStats((prev) => {
-        const newUsers = prev.users >= 20000 ? 20000 : prev.users + 500;
-        const newSubmissions =
-          prev.submissions >= 1500000 ? 1500000 : prev.submissions + 37500;
-        const newNetworks = prev.networks >= 40 ? 40 : prev.networks + 1;
+      currentStep++;
+      const progress = currentStep / steps;
 
-        if (
-          newUsers === 20000 &&
-          newSubmissions === 1500000 &&
-          newNetworks === 40
-        ) {
-          clearInterval(interval);
-        }
+      // Easing function for smooth animation (ease-out)
+      const easeOut = 1 - Math.pow(1 - progress, 3);
 
-        return {
-          users: newUsers,
-          submissions: newSubmissions,
-          networks: newNetworks,
-        };
+      setStats({
+        users: Math.round(easeOut * targetUsers),
+        submissions: Math.round(easeOut * targetSubmissions),
+        networks: Math.round(easeOut * targetNetworks),
       });
-    }, 50);
+
+      if (currentStep >= steps) {
+        clearInterval(interval);
+        // Set final values to ensure accuracy
+        setStats({
+          users: targetUsers,
+          submissions: targetSubmissions,
+          networks: targetNetworks,
+        });
+      }
+    }, intervalTime);
 
     return () => clearInterval(interval);
   }, []);
@@ -84,7 +94,7 @@ export default function AppHero() {
     transition: {
       duration: 20,
       repeat: Infinity,
-      ease: 'linear',
+      ease: "linear",
     },
   };
 
@@ -120,7 +130,7 @@ export default function AppHero() {
     transition: {
       duration: 2,
       repeat: Infinity,
-      ease: 'easeInOut',
+      ease: "easeInOut",
     },
   };
 
@@ -192,7 +202,7 @@ export default function AppHero() {
               transition={{
                 duration: 3 + Math.random() * 2,
                 repeat: Infinity,
-                ease: 'easeInOut',
+                ease: "easeInOut",
                 delay: Math.random() * 2,
               }}
             />
@@ -266,13 +276,15 @@ export default function AppHero() {
               variants={itemVariants}
               className="mb-1 bg-linear-to-r from-white/70 via-white to-slate-500/80 bg-clip-text text-3xl leading-tight text-transparent sm:text-3xl md:text-4xl lg:text-5xl"
             >
-              Master Data Structures and Algorithms <br className="hidden sm:inline" />
+              Master Data Structures and Algorithms{" "}
+              <br className="hidden sm:inline" />
             </motion.h1>
-              <motion.span
+            <motion.span
               variants={itemVariants}
-               className="text-3xl bg-linear-to-r from-purple-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
-                Ace Interviews, Build your Future.
-              </motion.span>
+              className="text-3xl bg-linear-to-r from-purple-400 via-blue-400 to-purple-400 bg-clip-text text-transparent"
+            >
+              Ace Interviews, Build your Future.
+            </motion.span>
 
             {/* Animated Stats Row */}
             <motion.div
@@ -331,7 +343,8 @@ export default function AppHero() {
               variants={itemVariants}
               className="mb-8 max-w-md px-6 text-center text-lg leading-relaxed text-slate-300/90 lg:text-end"
             >
-              Love Leetcode, giving developers the power to build beyond limits. One platform. Endless potential.
+              Love Leetcode, giving developers the power to build beyond limits.
+              One platform. Endless potential.
             </motion.p>
             <motion.div
               variants={itemVariants}
@@ -340,8 +353,8 @@ export default function AppHero() {
               <Button
                 className="group rounded-full border-t border-purple-400 bg-linear-to-b from-purple-700 to-slate-950/80 px-6 py-6 text-white shadow-lg shadow-purple-600/20 transition-all hover:shadow-purple-600/40 cursor-pointer"
                 size="lg"
-                onClick={() => window.location.href = '/problems'}
-                >
+                onClick={() => (window.location.href = "/problems")}
+              >
                 Start Solving Now
                 <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
               </Button>
@@ -371,8 +384,8 @@ export default function AppHero() {
                 ))}
               </div>
               <span className="text-xs text-slate-300">
-                <span className="font-semibold text-white">200+</span>{' '}
-                  developers already learning
+                <span className="font-semibold text-white">200+</span>{" "}
+                developers already learning
               </span>
               <ArrowUpRight className="h-3 w-3 text-purple-400" />
             </motion.div>

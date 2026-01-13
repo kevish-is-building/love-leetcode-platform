@@ -179,9 +179,9 @@ export default function ContactUs() {
               className="relative my-8 flex items-center justify-center overflow-hidden pr-8"
             >
               <div className="flex flex-col items-center justify-center overflow-hidden">
-                <article className="relative mx-auto h-87.5 min-h-60 max-w-112.5 overflow-hidden rounded-2xl border border-purple-500/30 bg-gradient-to-b from-purple-600 to-purple-900/20 p-6 text-3xl tracking-tight text-white md:h-[450px] md:min-h-80 md:p-8 md:text-4xl md:leading-[1.05] lg:text-5xl shadow-xl shadow-purple-500/20">
+                <article className="relative mx-auto h-87.5 min-h-60 max-w-112.5 overflow-hidden rounded-2xl border border-purple-500/30 bg-linear-to-b from-purple-600 to-purple-900/20 p-6 text-3xl tracking-tight text-white md:h-112.5 md:min-h-80 md:p-8 md:text-4xl md:leading-[1.05] lg:text-5xl shadow-xl shadow-purple-500/20">
                   Presenting you with the best service possible.
-                  <div className="absolute -bottom-20 -right-20 z-10 mx-auto flex h-full w-full max-w-75 items-center justify-center transition-all duration-700 hover:scale-105 md:-bottom-28 md:-right-28 md:max-w-[550px]">
+                  <div className="absolute -bottom-20 -right-20 z-10 mx-auto flex h-full w-full max-w-75 items-center justify-center transition-all duration-700 hover:scale-105 md:-bottom-28 md:-right-28 md:max-w-137.5">
                     <Earth
                       scale={1.1}
                       baseColor={[0.5, 0.2, 1]}

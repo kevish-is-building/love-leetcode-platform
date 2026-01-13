@@ -202,17 +202,11 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-transparent relative overflow-hidden p-6 md:p-8 lg:p-10 pt-20!">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1000ms' }} />
-        <div className="absolute top-1/2 right-1/3 w-72 h-72 bg-pink-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2000ms' }} />
-      </div>
 
       <div className="relative z-10 max-w-7xl mx-auto space-y-6">
         {/* User Details Card */}
-        <div className="p-8 md:p-12 transition-all duration-500 group relative overflow-hidden rounded-xl bg-transparent backdrop-blur-md border border-white/10 shadow-xl">
-          <div className="absolute inset-0 bg-linear-to-br from-purple-400 to-pink-600 opacity-0 group-hover:opacity-10 transition-opacity duration-500" />
+        <div className="p-8 md:p-12 transition-all duration-500 group relative overflow-hidden rounded-sm bg-transparent backdrop-blur-md border border-white/10 shadow-xl">
+          <div className="absolute inset-0 bg-linear-to-br from-purple-400 to-pink-600 opacity-0  transition-opacity duration-500" />
           
           <div className="relative z-10 flex flex-col md:flex-row items-center gap-6">
             {/* Avatar with glow effect */}
@@ -235,7 +229,7 @@ export default function DashboardPage() {
             
             {/* User Info */}
             <div className="text-center md:text-left space-y-2 flex-1">
-              <h1 className="text-2xl md:text-3xl font-bold text-white group-hover:text-transparent group-hover:bg-linear-to-r group-hover:from-white group-hover:to-gray-300 group-hover:bg-clip-text transition-all duration-300">
+              <h1 className="text-2xl md:text-3xl font-bold text-white  group-hover:bg-linear-to-r group-hover:from-white group-hover:to-gray-300 group-hover:bg-clip-text transition-all duration-300">
                 {user?.name || "User Details"}
               </h1>
               <p className="text-gray-300">
@@ -261,18 +255,18 @@ export default function DashboardPage() {
         {/* Stats Row */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Total Solved Problems */}
-          <div className="h-full p-6 transition-all duration-500 cursor-pointer group relative overflow-hidden rounded-xl bg-transparent backdrop-blur-md border border-white/10 shadow-xl">
-            <div className="absolute inset-0 bg-linear-to-br from-green-400 to-emerald-600 opacity-0 group-hover:opacity-10 transition-opacity duration-500" />
+          <div className="h-full p-6 transition-all duration-500 cursor-pointer group relative overflow-hidden rounded-sm bg-transparent backdrop-blur-md border border-white/10 shadow-xl">
+            <div className="absolute inset-0 bg-linear-to-br from-green-400 to-emerald-600 opacity-0  transition-opacity duration-500" />
             
             <div className="relative z-10">
               <div className="relative mb-4">
-                <div className="absolute inset-0 bg-linear-to-br from-green-400 to-emerald-600 rounded-lg blur-lg opacity-50 group-hover:opacity-100 transition-opacity duration-500" />
-                <div className="relative w-14 h-14 rounded-lg bg-linear-to-br from-green-400 to-emerald-600 p-3  transition-all duration-500">
+                <div className="absolute inset-0 bg-linear-to-br from-green-400 to-emerald-600 rounded-sm blur-lg opacity-50 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="relative w-14 h-14 rounded-sm bg-linear-to-br from-green-400 to-emerald-600 p-3  transition-all duration-500">
                   <Target className="w-full h-full text-white" />
                 </div>
               </div>
               
-              <h3 className="text-xl font-bold text-white mb-2 group-hover:text-transparent group-hover:bg-linear-to-r group-hover:from-white group-hover:to-gray-300 group-hover:bg-clip-text transition-all duration-300">
+              <h3 className="text-xl font-bold text-white mb-2  group-hover:bg-linear-to-r group-hover:from-white group-hover:to-gray-300 group-hover:bg-clip-text transition-all duration-300">
                 Total Solved
               </h3>
               {loadingSolved ? (
@@ -294,18 +288,18 @@ export default function DashboardPage() {
           </div>
 
           {/* Total Submissions */}
-          <div className="h-full p-6  transition-all duration-500 cursor-pointer group relative overflow-hidden rounded-xl bg-transparent backdrop-blur-md border border-white/10 shadow-xl">
-            <div className="absolute inset-0 bg-linear-to-br from-blue-400 to-cyan-600 opacity-0 group-hover:opacity-10 transition-opacity duration-500" />
+          <div className="h-full p-6  transition-all duration-500 cursor-pointer group relative overflow-hidden rounded-sm bg-transparent backdrop-blur-md border border-white/10 shadow-xl">
+            <div className="absolute inset-0 bg-linear-to-br from-blue-400 to-cyan-600 opacity-0  transition-opacity duration-500" />
             
             <div className="relative z-10">
               <div className="relative mb-4">
-                <div className="absolute inset-0 bg-linear-to-br from-blue-400 to-cyan-600 rounded-lg blur-lg opacity-50 group-hover:opacity-100 transition-opacity duration-500" />
-                <div className="relative w-14 h-14 rounded-lg bg-linear-to-br from-blue-400 to-cyan-600 p-3  transition-all duration-500">
+                <div className="absolute inset-0 bg-linear-to-br from-blue-400 to-cyan-600 rounded-sm blur-lg opacity-50 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="relative w-14 h-14 rounded-sm bg-linear-to-br from-blue-400 to-cyan-600 p-3  transition-all duration-500">
                   <TrendingUp className="w-full h-full text-white" />
                 </div>
               </div>
               
-              <h3 className="text-xl font-bold text-white mb-2 group-hover:text-transparent group-hover:bg-linear-to-r group-hover:from-white group-hover:to-gray-300 group-hover:bg-clip-text transition-all duration-300">
+              <h3 className="text-xl font-bold text-white mb-2  group-hover:bg-linear-to-r group-hover:from-white group-hover:to-gray-300 group-hover:bg-clip-text transition-all duration-300">
                 Total Submissions
               </h3>
               {loadingSubmissions ? (
@@ -327,18 +321,18 @@ export default function DashboardPage() {
           </div>
 
           {/* Random Developer Quote */}
-          <div className="h-full p-6  transition-all duration-500 cursor-pointer group relative overflow-hidden rounded-xl bg-transparent backdrop-blur-md border border-white/10 shadow-xl">
-            <div className="absolute inset-0 bg-linear-to-br from-purple-400 to-pink-600 opacity-0 group-hover:opacity-10 transition-opacity duration-500" />
+          <div className="h-full p-6  transition-all duration-500 cursor-pointer group relative overflow-hidden rounded-sm bg-transparent backdrop-blur-md border border-white/10 shadow-xl">
+            <div className="absolute inset-0 bg-linear-to-br from-purple-400 to-pink-600 opacity-0  transition-opacity duration-500" />
             
             <div className="relative z-10">
               <div className="relative mb-4">
-                <div className="absolute inset-0 bg-linear-to-br from-purple-400 to-pink-600 rounded-lg blur-lg opacity-50 group-hover:opacity-100 transition-opacity duration-500" />
-                <div className="relative w-14 h-14 rounded-lg bg-linear-to-br from-purple-400 to-pink-600 p-3  transition-all duration-500">
+                <div className="absolute inset-0 bg-linear-to-br from-purple-400 to-pink-600 rounded-sm blur-lg opacity-50 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="relative w-14 h-14 rounded-sm bg-linear-to-br from-purple-400 to-pink-600 p-3  transition-all duration-500">
                   <BookOpen className="w-full h-full text-white" />
                 </div>
               </div>
               
-              <h3 className="text-xl font-bold text-white mb-3 group-hover:text-transparent group-hover:bg-linear-to-r group-hover:from-white group-hover:to-gray-300 group-hover:bg-clip-text transition-all duration-300">
+              <h3 className="text-xl font-bold text-white mb-3  group-hover:bg-linear-to-r group-hover:from-white group-hover:to-gray-300 group-hover:bg-clip-text transition-all duration-300">
                 Developer Quote
               </h3>
               <p className="text-sm text-gray-300 italic leading-relaxed">
@@ -356,18 +350,18 @@ export default function DashboardPage() {
         {/* Bottom Section */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Progress Card */}
-          <div className="h-full p-6  transition-all duration-500 group relative overflow-hidden rounded-xl bg-transparent backdrop-blur-md border border-white/10 shadow-xl lg:col-span-1">
-            <div className="absolute inset-0 bg-linear-to-br from-orange-400 to-red-600 opacity-0 group-hover:opacity-10 transition-opacity duration-500" />
+          <div className="h-full p-6  transition-all duration-500 group relative overflow-hidden rounded-sm bg-transparent backdrop-blur-md border border-white/10 shadow-xl lg:col-span-1">
+            <div className="absolute inset-0 bg-linear-to-br from-orange-400 to-red-600 opacity-0  transition-opacity duration-500" />
             
             <div className="relative z-10">
               <div className="relative mb-6">
-                <div className="absolute inset-0 bg-linear-to-br from-orange-400 to-red-600 rounded-lg blur-lg opacity-50 group-hover:opacity-100 transition-opacity duration-500" />
-                <div className="relative w-14 h-14 rounded-lg bg-linear-to-br from-orange-400 to-red-600 p-3  transition-all duration-500">
+                <div className="absolute inset-0 bg-linear-to-br from-orange-400 to-red-600 rounded-sm blur-lg opacity-50 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="relative w-14 h-14 rounded-sm bg-linear-to-br from-orange-400 to-red-600 p-3  transition-all duration-500">
                   <Code2 className="w-full h-full text-white" />
                 </div>
               </div>
               
-              <h3 className="text-xl font-bold text-white mb-6 group-hover:text-transparent group-hover:bg-linear-to-r group-hover:from-white group-hover:to-gray-300 group-hover:bg-clip-text transition-all duration-300">
+              <h3 className="text-xl font-bold text-white mb-6  group-hover:bg-linear-to-r group-hover:from-white group-hover:to-gray-300 group-hover:bg-clip-text transition-all duration-300">
                 Progress Tracker
               </h3>
               
@@ -408,11 +402,11 @@ export default function DashboardPage() {
           </div>
 
           {/* Solved Problems Table */}
-          <div className="h-full p-6 transition-all duration-500 group relative overflow-hidden rounded-xl bg-transparent backdrop-blur-md border border-white/10 shadow-xl lg:col-span-2">
-            <div className="absolute inset-0 bg-linear-to-br from-purple-400 to-pink-600 opacity-0 group-hover:opacity-10 transition-opacity duration-500" />
+          <div className="h-full p-6 transition-all duration-500 group relative overflow-hidden rounded-sm bg-transparent backdrop-blur-md border border-white/10 shadow-xl lg:col-span-2">
+            <div className="absolute inset-0 bg-linear-to-br from-purple-400 to-pink-600 opacity-0  transition-opacity duration-500" />
             
             <div className="relative z-10">
-              <h3 className="text-xl font-bold text-white mb-6 group-hover:text-transparent group-hover:bg-linear-to-r group-hover:from-white group-hover:to-gray-300 group-hover:bg-clip-text transition-all duration-300">
+              <h3 className="text-xl font-bold text-white mb-6  group-hover:bg-linear-to-r group-hover:from-white group-hover:to-gray-300 group-hover:bg-clip-text transition-all duration-300">
                 Solved Problems ({loadingSolvedProblems ? "..." : solvedProblems?.length ?? 0})
               </h3>
               

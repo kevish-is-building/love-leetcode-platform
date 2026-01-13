@@ -98,7 +98,7 @@ const Navbar = () => {
                           fill="white"
                         />
                       </svg>
-                      <span className="font-bold text-xl">Love Leetcode</span>
+                      <span className="font-bold text-xl text-white">Love Leetcode</span>
                     </Link>
                   </div>
 
