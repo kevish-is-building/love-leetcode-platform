@@ -248,4 +248,43 @@ export const submissionAPI = {
   },
 };
 
+// Dashboard/User Stats API calls
+export const userStatsAPI = {
+  /**
+   * Get total number of solved problems
+   */
+  getSolvedProblemsCount: async () => {
+    return apiFetch('/utils/user/solved-problems-count', {
+      method: 'GET',
+    });
+  },
+
+  /**
+   * Get total number of submissions
+   */
+  getSubmissionCount: async () => {
+    return apiFetch('/utils/user/submission-count', {
+      method: 'GET',
+    });
+  },
+
+  /**
+   * Get user progress with difficulty breakdown
+   */
+  getProgress: async () => {
+    return apiFetch('/utils/user/progress', {
+      method: 'GET',
+    });
+  },
+
+  /**
+   * Get list of solved problems
+   */
+  getSolvedProblems: async () => {
+    return apiFetch('/problems/get-solved-problems', {
+      method: 'GET',
+    });
+  },
+};
+
 export { API_BASE_URL };

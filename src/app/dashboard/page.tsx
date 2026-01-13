@@ -1,41 +1,32 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Target, TrendingUp, Code2, BookOpen } from "lucide-react";
+import { userStatsAPI } from "@/lib/api";
 
-// Placeholder data - will be replaced with API calls later
-const placeholderStats = {
-  totalSolved: 42,
-  totalSubmissions: 156,
-};
+// Types for API responses
+interface SolvedProblem {
+  id: string;
+  title: string;
+  difficulty: string;
+  tags: string[];
+}
 
-const placeholderProgress = {
-  easy: { solved: 5, total: 10 },
-  medium: { solved: 2, total: 10 },
-  hard: { solved: 9, total: 10 },
-};
-
-const placeholderSolvedProblems = [
-  {
-    id: 1,
-    title: "Longest valid Parenthesis",
-    difficulty: "Hard",
-    tags: ["Dynamic Programming", "Math"],
-  },
-  {
-    id: 2,
-    title: "Longest valid Parenthesis",
-    difficulty: "Hard",
-    tags: ["Dynamic Programming", "Math"],
-  },
-  {
-    id: 3,
-    title: "Longest valid Parenthesis",
-    difficulty: "Hard",
-    tags: ["Dynamic Programming", "Math"],
-  },
-];
+interface ProgressData {
+  difficultyCount: {
+    easyCount: number;
+    mediumCount: number;
+    hardCount: number;
+  };
+  solvedCount: {
+    totalSolved: number;
+    easySolved: number;
+    mediumSolved: number;
+    hardSolved: number;
+  };
+}
 
 const developerQuotes = [
   "Code is like humor. When you have to explain it, it's bad. – Cory House",
@@ -91,9 +82,124 @@ function ProgressBar({
   );
 }
 
+// Card loader component
+function CardLoader() {
+  return (
+    <div className="flex items-center justify-center h-32">
+      <div className="relative">
+        <div className="w-12 h-12 border-4 border-white/20 border-t-white rounded-full animate-spin" />
+      </div>
+    </div>
+  );
+}
+
+// Mini loader for stats
+function MiniLoader() {
+  return (
+    <div className="inline-flex items-center justify-center">
+      <div className="w-10 h-10 border-3 border-white/20 border-t-white rounded-full animate-spin" />
+    </div>
+  );
+}
+
 export default function DashboardPage() {
   const { user } = useAuthStore();
   const randomQuote = getRandomQuote();
+
+  // Individual state for each section
+  const [totalSolved, setTotalSolved] = useState<number | null>(null);
+  const [totalSubmissions, setTotalSubmissions] = useState<number | null>(null);
+  const [progressData, setProgressData] = useState<ProgressData | null>(null);
+  const [solvedProblems, setSolvedProblems] = useState<SolvedProblem[] | null>(null);
+
+  // Loading states for each section
+  const [loadingSolved, setLoadingSolved] = useState(true);
+  const [loadingSubmissions, setLoadingSubmissions] = useState(true);
+  const [loadingProgress, setLoadingProgress] = useState(true);
+  const [loadingSolvedProblems, setLoadingSolvedProblems] = useState(true);
+
+  // Fetch total solved problems count
+  useEffect(() => {
+    const fetchSolvedCount = async () => {
+      try {
+        setLoadingSolved(true);
+        const response: any = await userStatsAPI.getSolvedProblemsCount();
+        if (response.success) {
+          setTotalSolved(response.data.solvedCount || 0);
+        }
+      } catch (error) {
+        console.error("Error fetching solved problems count:", error);
+        setTotalSolved(0);
+      } finally {
+        setLoadingSolved(false);
+      }
+    };
+
+    fetchSolvedCount();
+  }, []);
+
+  // Fetch total submissions count
+  useEffect(() => {
+    const fetchSubmissionCount = async () => {
+      try {
+        setLoadingSubmissions(true);
+        const response: any = await userStatsAPI.getSubmissionCount();
+        if (response.success) {
+          setTotalSubmissions(response.data.submissionCount || 0);
+        }
+      } catch (error) {
+        console.error("Error fetching submission count:", error);
+        setTotalSubmissions(0);
+      } finally {
+        setLoadingSubmissions(false);
+      }
+    };
+
+    fetchSubmissionCount();
+  }, []);
+
+  // Fetch progress data
+  useEffect(() => {
+    const fetchProgress = async () => {
+      try {
+        setLoadingProgress(true);
+        const response: any = await userStatsAPI.getProgress();
+        if (response.success) {
+          setProgressData(response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching progress:", error);
+        setProgressData({
+          difficultyCount: { easyCount: 0, mediumCount: 0, hardCount: 0 },
+          solvedCount: { totalSolved: 0, easySolved: 0, mediumSolved: 0, hardSolved: 0 }
+        });
+      } finally {
+        setLoadingProgress(false);
+      }
+    };
+
+    fetchProgress();
+  }, []);
+
+  // Fetch solved problems list
+  useEffect(() => {
+    const fetchSolvedProblems = async () => {
+      try {
+        setLoadingSolvedProblems(true);
+        const response: any = await userStatsAPI.getSolvedProblems();
+        if (response.success) {
+          setSolvedProblems(response.data.problems || []);
+        }
+      } catch (error) {
+        console.error("Error fetching solved problems:", error);
+        setSolvedProblems([]);
+      } finally {
+        setLoadingSolvedProblems(false);
+      }
+    };
+
+    fetchSolvedProblems();
+  }, []);
 
   return (
     <div className="min-h-screen bg-transparent relative overflow-hidden p-6 md:p-8 lg:p-10 pt-20!">
@@ -170,15 +276,21 @@ export default function DashboardPage() {
               <h3 className="text-xl font-bold text-white mb-2 group-hover:text-transparent group-hover:bg-linear-to-r group-hover:from-white group-hover:to-gray-300 group-hover:bg-clip-text transition-all duration-300">
                 Total Solved
               </h3>
-              <p className="text-4xl md:text-5xl font-bold text-white mb-2">
-                {placeholderStats.totalSolved}
-              </p>
-              <p className="text-gray-400 text-sm">Problems Completed</p>
-              
-              <div className="mt-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <div className="w-2 h-2 rounded-full bg-linear-to-r from-green-400 to-emerald-600" />
-                <span className="text-xs text-gray-400">Keep it up!</span>
-              </div>
+              {loadingSolved ? (
+                <MiniLoader />
+              ) : (
+                <>
+                  <p className="text-4xl md:text-5xl font-bold text-white mb-2">
+                    {totalSolved ?? 0}
+                  </p>
+                  <p className="text-gray-400 text-sm">Problems Completed</p>
+                  
+                  <div className="mt-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="w-2 h-2 rounded-full bg-linear-to-r from-green-400 to-emerald-600" />
+                    <span className="text-xs text-gray-400">Keep it up!</span>
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
@@ -197,15 +309,21 @@ export default function DashboardPage() {
               <h3 className="text-xl font-bold text-white mb-2 group-hover:text-transparent group-hover:bg-linear-to-r group-hover:from-white group-hover:to-gray-300 group-hover:bg-clip-text transition-all duration-300">
                 Total Submissions
               </h3>
-              <p className="text-4xl md:text-5xl font-bold text-white mb-2">
-                {placeholderStats.totalSubmissions}
-              </p>
-              <p className="text-gray-400 text-sm">Code Attempts</p>
-              
-              <div className="mt-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <div className="w-2 h-2 rounded-full bg-linear-to-r from-blue-400 to-cyan-600" />
-                <span className="text-xs text-gray-400">Trending up</span>
-              </div>
+              {loadingSubmissions ? (
+                <MiniLoader />
+              ) : (
+                <>
+                  <p className="text-4xl md:text-5xl font-bold text-white mb-2">
+                    {totalSubmissions ?? 0}
+                  </p>
+                  <p className="text-gray-400 text-sm">Code Attempts</p>
+                  
+                  <div className="mt-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="w-2 h-2 rounded-full bg-linear-to-r from-blue-400 to-cyan-600" />
+                    <span className="text-xs text-gray-400">Trending up</span>
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
@@ -225,7 +343,7 @@ export default function DashboardPage() {
                 Developer Quote
               </h3>
               <p className="text-sm text-gray-300 italic leading-relaxed">
-                &ldquo;{randomQuote}&rdquo;
+                {randomQuote}
               </p>
               
               <div className="mt-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -254,31 +372,39 @@ export default function DashboardPage() {
                 Progress Tracker
               </h3>
               
-              <div className="space-y-6">
-                <ProgressBar 
-                  label="Easy" 
-                  solved={placeholderProgress.easy.solved} 
-                  total={placeholderProgress.easy.total}
-                  colorClass="bg-green-500"
-                />
-                <ProgressBar 
-                  label="Medium" 
-                  solved={placeholderProgress.medium.solved} 
-                  total={placeholderProgress.medium.total}
-                  colorClass="bg-yellow-500"
-                />
-                <ProgressBar 
-                  label="Hard" 
-                  solved={placeholderProgress.hard.solved} 
-                  total={placeholderProgress.hard.total}
-                  colorClass="bg-red-500"
-                />
-              </div>
-              
-              <div className="mt-6 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <div className="w-2 h-2 rounded-full bg-linear-to-r from-orange-400 to-red-600" />
-                <span className="text-xs text-gray-400">Your journey</span>
-              </div>
+              {loadingProgress ? (
+                <CardLoader />
+              ) : progressData ? (
+                <>
+                  <div className="space-y-6">
+                    <ProgressBar 
+                      label="Easy" 
+                      solved={progressData.solvedCount.easySolved} 
+                      total={progressData.difficultyCount.easyCount}
+                      colorClass="bg-green-500"
+                    />
+                    <ProgressBar 
+                      label="Medium" 
+                      solved={progressData.solvedCount.mediumSolved} 
+                      total={progressData.difficultyCount.mediumCount}
+                      colorClass="bg-yellow-500"
+                    />
+                    <ProgressBar 
+                      label="Hard" 
+                      solved={progressData.solvedCount.hardSolved} 
+                      total={progressData.difficultyCount.hardCount}
+                      colorClass="bg-red-500"
+                    />
+                  </div>
+                  
+                  <div className="mt-6 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="w-2 h-2 rounded-full bg-linear-to-r from-orange-400 to-red-600" />
+                    <span className="text-xs text-gray-400">Your journey</span>
+                  </div>
+                </>
+              ) : (
+                <div className="text-center text-gray-400">No progress data available</div>
+              )}
             </div>
           </div>
 
@@ -288,64 +414,70 @@ export default function DashboardPage() {
             
             <div className="relative z-10">
               <h3 className="text-xl font-bold text-white mb-6 group-hover:text-transparent group-hover:bg-linear-to-r group-hover:from-white group-hover:to-gray-300 group-hover:bg-clip-text transition-all duration-300">
-                Solved Problems ({placeholderSolvedProblems.length})
+                Solved Problems ({loadingSolvedProblems ? "..." : solvedProblems?.length ?? 0})
               </h3>
               
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-white/10">
-                      <th className="text-left py-3 px-2 text-sm font-medium text-gray-400">
-                        Title
-                      </th>
-                      <th className="text-left py-3 px-2 text-sm font-medium text-gray-400">
-                        Difficulty
-                      </th>
-                      <th className="text-left py-3 px-2 text-sm font-medium text-gray-400">
-                        Tags
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {placeholderSolvedProblems.map((problem, index) => (
-                      <tr 
-                        key={problem.id} 
-                        className={`hover:bg-white/5 transition-colors ${index !== placeholderSolvedProblems.length - 1 ? "border-b border-white/5" : ""}`}
-                      >
-                        <td className="py-3 px-2 text-sm text-white">
-                          {problem.title}
-                        </td>
-                        <td className={`py-3 px-2 text-sm font-medium ${getDifficultyColor(problem.difficulty)}`}>
-                          {problem.difficulty}
-                        </td>
-                        <td className="py-3 px-2">
-                          <div className="flex flex-wrap gap-1">
-                            {problem.tags.slice(0, 2).map((tag, tagIndex) => (
-                              <span 
-                                key={tagIndex}
-                                className="px-2 py-0.5 text-xs bg-white/10 text-gray-300 rounded"
-                              >
-                                {tag}
-                              </span>
-                            ))}
-                            {problem.tags.length > 2 && (
-                              <span className="px-2 py-0.5 text-xs text-gray-400">
-                                +{problem.tags.length - 2}
-                              </span>
-                            )}
-                          </div>
-                        </td>
+              {loadingSolvedProblems ? (
+                <CardLoader />
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-white/10">
+                        <th className="text-left py-3 px-2 text-sm font-medium text-gray-400">
+                          Title
+                        </th>
+                        <th className="text-left py-3 px-2 text-sm font-medium text-gray-400">
+                          Difficulty
+                        </th>
+                        <th className="text-left py-3 px-2 text-sm font-medium text-gray-400">
+                          Tags
+                        </th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-                
-                {placeholderSolvedProblems.length === 0 && (
-                  <div className="text-center py-8 text-gray-400">
-                    No solved problems yet. Start solving!
-                  </div>
-                )}
-              </div>
+                    </thead>
+                    <tbody>
+                      {solvedProblems && solvedProblems.length > 0 ? (
+                        solvedProblems.map((problem, index) => (
+                          <tr 
+                            key={problem.id} 
+                            className={`hover:bg-white/5 transition-colors ${index !== solvedProblems.length - 1 ? "border-b border-white/5" : ""}`}
+                          >
+                            <td className="py-3 px-2 text-sm text-white">
+                              {problem.title}
+                            </td>
+                            <td className={`py-3 px-2 text-sm font-medium ${getDifficultyColor(problem.difficulty)}`}>
+                              {problem.difficulty}
+                            </td>
+                            <td className="py-3 px-2">
+                              <div className="flex flex-wrap gap-1">
+                                {problem.tags?.slice(0, 2).map((tag, tagIndex) => (
+                                  <span 
+                                    key={tagIndex}
+                                    className="px-2 py-0.5 text-xs bg-white/10 text-gray-300 rounded"
+                                  >
+                                    {tag}
+                                  </span>
+                                ))}
+                                {problem.tags && problem.tags.length > 2 && (
+                                  <span className="px-2 py-0.5 text-xs text-gray-400">
+                                    +{problem.tags.length - 2}
+                                  </span>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan={3} className="text-center py-8 text-gray-400">
+                            No solved problems yet. Start solving!
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           </div>
         </div>
