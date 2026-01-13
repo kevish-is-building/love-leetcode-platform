@@ -148,6 +148,30 @@ export default function AuthPage() {
 
   const { login, registers, isLoading, isRegistered, isAuthenticated, error, clearError } = useAuthStore();
 
+  // Handle Google OAuth errors from URL params
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const oauthError = params.get('error');
+    
+    if (oauthError) {
+      const errorMessages: Record<string, string> = {
+        'access_denied': 'Google authentication was cancelled',
+        'missing_parameters': 'Authentication failed: Missing parameters',
+        'invalid_state': 'Authentication failed: Invalid request',
+        'token_exchange_failed': 'Failed to authenticate with Google',
+        'user_info_failed': 'Failed to retrieve user information',
+        'authentication_failed': 'Authentication failed. Please try again',
+        'server_error': 'Server error. Please try again later',
+      };
+      
+      const message = errorMessages[oauthError] || 'Google authentication failed';
+      toast.error(message);
+      
+      // Clean up URL
+      router.replace('/auth');
+    }
+  }, [router]);
+
   // Login form
   const loginForm = useForm<LoginFormData>({
     resolver: zodResolver(LoginSchema),
@@ -402,6 +426,10 @@ export default function AuthPage() {
                   <Button
                     type="button"
                     disabled={isSubmitting}
+                    onClick={() => {
+                      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
+                      window.location.href = `${apiUrl}/auth/google`;
+                    }}
                     className="w-full bg-white hover:bg-gray-100 disabled:hover:bg-white text-gray-900 font-medium py-3 transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-60 cursor-pointer"
                   >
                     <GoogleIcon />

@@ -16,6 +16,7 @@ import {
 } from "@/components/playlist";
 import Loader from "@/components/ui/loader";
 import { Button } from "@/components/ui/button";
+import FuzzyText from "@/components/layout/FuzzyText";
 
 export default function PlaylistsPage() {
   const { user } = useAuthStore();
@@ -29,7 +30,11 @@ export default function PlaylistsPage() {
     removeProblemFromPlaylist,
     addProblemToPlaylist,
   } = usePlaylistStore();
-  const { problems: allProblems, fetchProblems, isLoading: isLoadingProblems } = useProblemStore();
+  const {
+    problems: allProblems,
+    fetchProblems,
+    isLoading: isLoadingProblems,
+  } = useProblemStore();
 
   // View state: "personal" or "public"
   const [viewMode, setViewMode] = useState<"personal" | "public">("personal");
@@ -261,21 +266,33 @@ export default function PlaylistsPage() {
               transition={{ duration: 0.5 }}
               className="text-center py-16"
             >
-              <div className="bg-transparent backdrop-blur-sm border border-gray-700/50 rounded-sm p-8 max-w-md mx-auto">
-                <div className="w-16 h-16 bg-gray-900 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Plus className="w-8 h-8 text-gray-400" />
+              {viewMode === "public" ? (
+                <div className="flex items-center justify-center">
+                  <FuzzyText
+                    fontSize="clamp(1rem, 4vw, 4rem)"
+                    fontWeight={800}
+                    color="#fff"
+                    baseIntensity={0.2}
+                    hoverIntensity={0.6}
+                    glitchMode={true}
+                    glitchInterval={2000}
+                    glitchDuration={200}
+                    className="mb-4"
+                  >
+                    Coming Soon
+                  </FuzzyText>
                 </div>
-                <h3 className="text-xl font-semibold text-white mb-2">
-                  {viewMode === "personal"
-                    ? "No Playlists Yet"
-                    : "No Public Playlists"}
-                </h3>
-                <p className="text-gray-400 mb-6">
-                  {viewMode === "personal"
-                    ? "Create your first playlist to start organizing problems."
-                    : "No public playlists are available at the moment."}
-                </p>
-                {viewMode === "personal" && (
+              ) : (
+                <div className="bg-transparent backdrop-blur-sm border border-gray-700/50 rounded-sm p-8 max-w-md mx-auto">
+                  <div className="w-16 h-16 bg-gray-900 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Plus className="w-8 h-8 text-gray-400" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-white mb-2">
+                    No Playlists Yet
+                  </h3>
+                  <p className="text-gray-400 mb-6">
+                    Create your first playlist to start organizing problems.
+                  </p>
                   <Button
                     className="group rounded-full border-t border-purple-400 bg-linear-to-b from-purple-700 to-slate-950/80  text-white shadow-lg shadow-purple-600/20 transition-all hover:shadow-purple-600/40 cursor-pointer"
                     size="lg"
@@ -284,8 +301,8 @@ export default function PlaylistsPage() {
                     Create new playlist
                     <PlusIcon className="transition-transform duration-300 group-hover:rotate-180" />
                   </Button>
-                )}
-              </div>
+                </div>
+              )}
             </motion.div>
           )}
         </motion.div>

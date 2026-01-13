@@ -16,7 +16,6 @@ const Navbar = () => {
 
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -39,7 +38,7 @@ const Navbar = () => {
   const navLinks = [
     { name: "Problems", path: "/problems", isProtected: true },
     { name: "Learn", path: "/learn", isProtected: false },
-    { name: "Playlists", path: "/playlists", isProtected: false },
+    { name: "Playlists", path: "/playlists", isProtected: true },
     { name: "Contact Us", path: "/contact", isProtected: false },
     { name: "Dashboard", path: "/dashboard", isProtected: true },
   ];
