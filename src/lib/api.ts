@@ -1,6 +1,6 @@
 // API Configuration and Helper Functions
 
-const API_BASE_URL = process.env.NEXT_API_URL || 'http://localhost:8080/api/v1';
+const API_BASE_URL = process.env.NEXT_API_URL ;
 
 interface FetchOptions extends RequestInit {
   credentials?: RequestCredentials;
