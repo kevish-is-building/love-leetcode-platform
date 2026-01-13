@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Target, TrendingUp, Code2, BookOpen } from "lucide-react";
 import { userStatsAPI } from "@/lib/api";
@@ -188,7 +187,7 @@ export default function DashboardPage() {
         setLoadingSolvedProblems(true);
         const response: any = await userStatsAPI.getSolvedProblems();
         if (response.success) {
-          setSolvedProblems(response.data.problems || []);
+          setSolvedProblems(response.data || []);
         }
       } catch (error) {
         console.error("Error fetching solved problems:", error);

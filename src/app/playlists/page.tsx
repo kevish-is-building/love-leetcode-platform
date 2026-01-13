@@ -139,14 +139,6 @@ export default function PlaylistsPage() {
     return playlist.isPublic;
   });
 
-  if (isLoading && playlists.length === 0) {
-    return (
-      <div className="min-h-screen bg-transparent flex items-center justify-center">
-        <Loader />
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-transparent">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
@@ -232,7 +224,11 @@ export default function PlaylistsPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7, duration: 0.7 }}
         >
-          {filteredPlaylists.length > 0 ? (
+          {isLoading && playlists.length === 0 ? (
+            <div className="flex items-center justify-center py-24">
+              <Loader />
+            </div>
+          ) : filteredPlaylists.length > 0 ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <AnimatePresence mode="popLayout">
                 {filteredPlaylists.map((playlist, index) => (

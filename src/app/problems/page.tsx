@@ -119,22 +119,6 @@ export default function ProblemsPage() {
 
   const isAdmin = user?.role === "ADMIN";
 
-  // if (!user) {
-  //   return (
-  //     <ProtectedRoute>
-  //       <div className="min-h-screen bg-transparent flex items-center justify-center">
-  //         <Loader />
-  //       </div>
-  //     </ProtectedRoute>
-  //   );
-  // }
-
-  if (problemsLoading) {
-    return <div className="min-h-screen bg-transparent flex items-center justify-center">
-      <Loader />
-      </div>
-  }
-
   return (
     <div className="min-h-screen bg-transparent">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
@@ -179,6 +163,11 @@ export default function ProblemsPage() {
           transition={{ delay: 0.7, duration: 0.7 }}
           className="rounded-sm bg-transparent backdrop-blur-xl border border-gray-700/50 overflow-hidden shadow-2xl"
         >
+          {problemsLoading ? (
+            <div className="flex items-center justify-center py-24">
+              <Loader />
+            </div>
+          ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full">
               <thead>
@@ -309,6 +298,7 @@ export default function ProblemsPage() {
               </tbody>
             </table>
           </div>
+          )}
         </motion.div>
 
         {/* Loading More Indicator */}

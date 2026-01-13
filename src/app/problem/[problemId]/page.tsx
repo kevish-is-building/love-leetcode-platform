@@ -296,35 +296,8 @@ export default function ProblemSolverPage() {
     setShowCodeModal(true);
   };
 
-  if (isLoading) {
-    return (
-      <div className="h-screen bg-transparent flex items-center justify-center">
-        <Loader />
-      </div>
-    );
-  }
-
-  if (error || !problem) {
-    return (
-      <div className="h-screen bg-transparent flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-xl font-bold text-red-400 mb-4">
-            {error || "Problem not found"}
-          </h2>
-          <Button
-            className="group rounded-full border-t border-purple-400 bg-linear-to-b from-purple-700 to-slate-950/80 px-6 py-6 text-white shadow-lg shadow-purple-600/20 transition-all hover:shadow-purple-600/40 cursor-pointer"
-            size="lg"
-            onClick={() => router.push("/problems")}
-          >
-            Back to Problems
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
-  const testCases = problem.testCases || [];
-  const examples = getExamples(problem.examples);
+  const testCases = problem?.testCases || [];
+  const examples = problem ? getExamples(problem.examples) : [];
   const tabs = [
     { id: "description", icon: FileText, label: "Description" },
     { id: "editorial", icon: BookOpen, label: "Editorial" },
@@ -344,7 +317,7 @@ export default function ProblemSolverPage() {
           >
             <ArrowLeft className="w-4 h-4" />
             <span className="hidden sm:inline">Problem :</span>
-            <span className="truncate max-w-40">{problem.title}</span>
+            <span className="truncate max-w-40">{problem?.title || "Loading..."}</span>
           </button>
         </div>
       </header>
@@ -373,6 +346,25 @@ export default function ProblemSolverPage() {
               </div>
 
               <div className="flex-1 overflow-y-auto p-4">
+                {isLoading ? (
+                  <div className="flex items-center justify-center py-24">
+                    <Loader />
+                  </div>
+                ) : error || !problem ? (
+                  <div className="text-center py-16">
+                    <h2 className="text-xl font-bold text-red-400 mb-4">
+                      {error || "Problem not found"}
+                    </h2>
+                    <Button
+                      className="group rounded-full border-t border-purple-400 bg-linear-to-b from-purple-700 to-slate-950/80 px-6 py-6 text-white shadow-lg shadow-purple-600/20 transition-all hover:shadow-purple-600/40 cursor-pointer"
+                      size="lg"
+                      onClick={() => router.push("/problems")}
+                    >
+                      Back to Problems
+                    </Button>
+                  </div>
+                ) : (
+                  <>
                 {activeTab === "description" && (
                   <div className="space-y-5">
                     <div>
@@ -640,6 +632,8 @@ export default function ProblemSolverPage() {
                     </FuzzyText>
                   </div>
                 )}
+                  </>
+                )}
               </div>
             </div>
           </Panel>
@@ -648,12 +642,12 @@ export default function ProblemSolverPage() {
 
           {/* Right Panel */}
           <Panel defaultSize={70} minSize={40}>
-            <PanelGroup direction="vertical">
-              {/* Editor */}
-              <Panel defaultSize={60} minSize={30}>
-                <div className="h-full flex flex-col bg-transparent">
-                  <div className="h-10 px-3 flex items-center justify-between border-b border-zinc-800 shrink-0">
-                    <span className="text-xs text-zinc-400">Code Editor</span>
+            {isLoading || !problem ? (
+              <div className="h-full flex items-center justify-center bg-transparent">
+                <Loader />
+              </div>
+            ) : (
+            <PanelGroup direction="vertical">\n              {/* Editor */}\n              <Panel defaultSize={60} minSize={30}>\n                <div className="h-full flex flex-col bg-transparent">\n                  <div className="h-10 px-3 flex items-center justify-between border-b border-zinc-800 shrink-0">\n                    <span className="text-xs text-zinc-400">Code Editor</span>
                     <div className="flex items-center gap-2">
                       <select
                         value={language}
@@ -915,6 +909,7 @@ export default function ProblemSolverPage() {
                 </div>
               </Panel>
             </PanelGroup>
+            )}
           </Panel>
         </PanelGroup>
       </div>
