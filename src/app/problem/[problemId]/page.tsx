@@ -317,7 +317,9 @@ export default function ProblemSolverPage() {
           >
             <ArrowLeft className="w-4 h-4" />
             <span className="hidden sm:inline">Problem :</span>
-            <span className="truncate max-w-40">{problem?.title || "Loading..."}</span>
+            <span className="truncate max-w-40">
+              {problem?.title || "Loading..."}
+            </span>
           </button>
         </div>
       </header>
@@ -365,273 +367,280 @@ export default function ProblemSolverPage() {
                   </div>
                 ) : (
                   <>
-                {activeTab === "description" && (
-                  <div className="space-y-5">
-                    <div>
-                      <h1 className="text-lg font-bold text-white mb-2">
-                        {problem.title}
-                      </h1>
-                      <div className="flex flex-wrap gap-2">
-                        <span
-                          className={`px-2 py-0.5 rounded text-xs font-semibold border ${diffStyle(
-                            problem.difficulty
-                          )}`}
-                        >
-                          {problem.difficulty}
-                        </span>
-                      </div>
-                      {problem.tags
-                        ?.slice(0, problem.tags.length - 1)
-                        .map((tag, i) => (
-                          <span
-                            key={i}
-                            className="px-2 py-0.5 border border-zinc-600 text-zinc-400 text-xs rounded mr-1"
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                    </div>
-
-                    <div>
-                      <h3 className="text-sm font-semibold text-white mb-2">
-                        Description
-                      </h3>
-                      <p className="text-sm text-zinc-300 leading-relaxed whitespace-pre-line">
-                        {problem.description}
-                      </p>
-                    </div>
-
-                    {examples.length > 0 && (
-                      <div>
-                        <h3 className="text-sm font-semibold text-white mb-2">
-                          Example
-                        </h3>
-                        {examples.map((ex, i) => (
-                          <div
-                            key={i}
-                            className="mb-3 border border-zinc-700 rounded-sm p-3 space-y-2"
-                          >
-                            <div className="">
-                              <span className="text-xs text-zinc-400">
-                                Input:
-                              </span>
-                              <code className="block mt-0.5 text-sm text-zinc-300 font-mono">
-                                {ex.input}
-                              </code>
-                            </div>
-                            <div>
-                              <span className="text-xs text-zinc-500">
-                                Output:
-                              </span>
-                              <code className="block mt-0.5 text-sm text-zinc-300 font-mono">
-                                {ex.output}
-                              </code>
-                            </div>
-                            {ex.explanation && (
-                              <div>
-                                <span className="text-xs text-zinc-500">
-                                  Explanation:
-                                </span>
-                                <p className="mt-0.5 text-sm text-zinc-400">
-                                  {ex.explanation}
-                                </p>
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                    {problem.constraints && (
-                      <div>
-                        <h3 className="text-sm font-semibold text-zinc-300 mb-2">
-                          Constraints
-                        </h3>
-                        <ul className="space-y-1">
-                          {problem.constraints.split("\n").map((c, i) => (
-                            <li
-                              key={i}
-                              className="text-sm text-zinc-400 flex gap-2"
+                    {activeTab === "description" && (
+                      <div className="space-y-5">
+                        <div>
+                          <h1 className="text-lg font-bold text-white mb-2">
+                            {problem.title}
+                          </h1>
+                          <div className="flex flex-wrap gap-2">
+                            <span
+                              className={`px-2 py-0.5 rounded text-xs font-semibold border ${diffStyle(
+                                problem.difficulty
+                              )}`}
                             >
-                              <span className="text-lime-400">•</span>
-                              <code className="text-zinc-300">{c}</code>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                )}
+                              {problem.difficulty}
+                            </span>
+                          </div>
+                          {problem.tags
+                            ?.slice(0, problem.tags.length - 1)
+                            .map((tag, i) => (
+                              <span
+                                key={i}
+                                className="px-2 py-0.5 border border-zinc-600 text-zinc-400 text-xs rounded mr-1"
+                              >
+                                {tag}
+                              </span>
+                            ))}
+                        </div>
 
-                {activeTab === "editorial" && (
-                  <div className="text-sm text-zinc-400">
-                    {problem.editorial ? (
-                      <div className="whitespace-pre-line">
-                        {problem.editorial}
-                      </div>
-                    ) : (
-                      <p className="text-center py-8">
-                        No editorial available.
-                      </p>
-                    )}
-                  </div>
-                )}
+                        <div>
+                          <h3 className="text-sm font-semibold text-white mb-2">
+                            Description
+                          </h3>
+                          <p className="text-sm text-zinc-300 leading-relaxed whitespace-pre-line">
+                            {problem.description}
+                          </p>
+                        </div>
 
-                {activeTab === "submissions" && (
-                  <div>
-                    {isLoadingSubmissions ? (
-                      <div className="flex items-center justify-center py-8">
-                        <Loader />
-                      </div>
-                    ) : submissions.length > 0 ? (
-                      <div className="space-y-2">
-                        <div className="overflow-x-auto">
-                          <table className="w-full">
-                            <thead>
-                              <tr className="border-b border-zinc-700">
-                                <th className="text-left py-3 px-4 text-xs font-semibold text-white uppercase tracking-wider">
-                                  Status
-                                </th>
-                                <th className="text-left py-3 px-4 text-xs font-semibold text-white uppercase tracking-wider">
-                                  Language
-                                </th>
-                                <th className="text-left py-3 px-4 text-xs font-semibold text-white uppercase tracking-wider">
-                                  Runtime
-                                </th>
-                                <th className="text-left py-3 px-4 text-xs font-semibold text-white uppercase tracking-wider">
-                                  Memory
-                                </th>
-                                <th className="text-left py-3 px-4 text-xs font-semibold text-white uppercase tracking-wider">
-                                  Submitted At
-                                </th>
-                                <th className="text-left py-3 px-4 text-xs font-semibold text-white uppercase tracking-wider">
-                                  View Code
-                                </th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {submissions.map((submission) => (
-                                <tr
-                                  key={submission.id}
-                                  className="border-b border-zinc-800 hover:bg-zinc-800/30 transition-colors"
+                        {examples.length > 0 && (
+                          <div>
+                            <h3 className="text-sm font-semibold text-white mb-2">
+                              Example
+                            </h3>
+                            {examples.map((ex, i) => (
+                              <div
+                                key={i}
+                                className="mb-3 border border-zinc-700 rounded-sm p-3 space-y-2"
+                              >
+                                <div className="">
+                                  <span className="text-xs text-zinc-400">
+                                    Input:
+                                  </span>
+                                  <code className="block mt-0.5 text-sm text-zinc-300 font-mono">
+                                    {ex.input}
+                                  </code>
+                                </div>
+                                <div>
+                                  <span className="text-xs text-zinc-500">
+                                    Output:
+                                  </span>
+                                  <code className="block mt-0.5 text-sm text-zinc-300 font-mono">
+                                    {ex.output}
+                                  </code>
+                                </div>
+                                {ex.explanation && (
+                                  <div>
+                                    <span className="text-xs text-zinc-500">
+                                      Explanation:
+                                    </span>
+                                    <p className="mt-0.5 text-sm text-zinc-400">
+                                      {ex.explanation}
+                                    </p>
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {problem.constraints && (
+                          <div>
+                            <h3 className="text-sm font-semibold text-zinc-300 mb-2">
+                              Constraints
+                            </h3>
+                            <ul className="space-y-1">
+                              {problem.constraints.split("\n").map((c, i) => (
+                                <li
+                                  key={i}
+                                  className="text-sm text-zinc-400 flex gap-2"
                                 >
-                                  <td className="py-3 px-4">
-                                    <div className="flex items-center gap-2">
-                                      {/* {submission.status?.toLowerCase().includes('accept') ? (
+                                  <span className="text-lime-400">•</span>
+                                  <code className="text-zinc-300">{c}</code>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {activeTab === "editorial" && (
+                      <div className="text-sm text-zinc-400">
+                        {problem.editorial ? (
+                          <div className="whitespace-pre-line">
+                            {problem.editorial}
+                          </div>
+                        ) : (
+                          <p className="text-center py-8">
+                            No editorial available.
+                          </p>
+                        )}
+                      </div>
+                    )}
+
+                    {activeTab === "submissions" && (
+                      <div>
+                        {isLoadingSubmissions ? (
+                          <div className="flex items-center justify-center py-8">
+                            <Loader />
+                          </div>
+                        ) : submissions.length > 0 ? (
+                          <div className="space-y-2">
+                            <div className="overflow-x-auto">
+                              <table className="w-full">
+                                <thead>
+                                  <tr className="border-b border-zinc-700">
+                                    <th className="text-left py-3 px-4 text-xs font-semibold text-white uppercase tracking-wider">
+                                      Status
+                                    </th>
+                                    <th className="text-left py-3 px-4 text-xs font-semibold text-white uppercase tracking-wider">
+                                      Language
+                                    </th>
+                                    <th className="text-left py-3 px-4 text-xs font-semibold text-white uppercase tracking-wider">
+                                      Runtime
+                                    </th>
+                                    <th className="text-left py-3 px-4 text-xs font-semibold text-white uppercase tracking-wider">
+                                      Memory
+                                    </th>
+                                    <th className="text-left py-3 px-4 text-xs font-semibold text-white uppercase tracking-wider">
+                                      Submitted At
+                                    </th>
+                                    <th className="text-left py-3 px-4 text-xs font-semibold text-white uppercase tracking-wider">
+                                      View Code
+                                    </th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {submissions.map((submission) => (
+                                    <tr
+                                      key={submission.id}
+                                      className="border-b border-zinc-800 hover:bg-zinc-800/30 transition-colors"
+                                    >
+                                      <td className="py-3 px-4">
+                                        <div className="flex items-center gap-2">
+                                          {/* {submission.status?.toLowerCase().includes('accept') ? (
                                         <Check className="w-4 h-4 text-green-400" />
                                       ) : (
                                         <X className="w-4 h-4 text-red-400" />
                                       )} */}
-                                      <span
-                                        className={`text-sm px-2 py-1 rounded ${getStatusStyle(
-                                          submission.status
-                                        )}`}
-                                      >
-                                        {submission.status || "Unknown"}
-                                      </span>
-                                    </div>
-                                  </td>
-                                  <td className="py-3 px-4">
-                                    <span className="text-sm text-white px-2 py-1 rounded border border-zinc-700">
-                                      {submission.language}
-                                    </span>
-                                  </td>
-                                  <td className="py-3 px-4">
-                                    <span className="text-sm text-zinc-300">
-                                      {submission.time
-                                        ? `${(
-                                            JSON.parse(submission.time).reduce(
-                                              (a: string, b: string) =>
-                                                Number(a) + Number(b),
-                                              0
-                                            ) /
-                                            JSON.parse(submission.time).length
-                                          ).toFixed(2)} KB`
-                                        : "-"}
-                                    </span>
-                                  </td>
-                                  <td className="py-3 px-4">
-                                    <span className="text-sm text-zinc-300">
-                                      {submission.memory
-                                        ? `${(
-                                            JSON.parse(
-                                              submission.memory
-                                            ).reduce(
-                                              (a: number, b: number) => a + b,
-                                              0
-                                            ) /
-                                            JSON.parse(submission.memory).length
-                                          ).toFixed(2)} KB`
-                                        : "-"}
-                                    </span>
-                                  </td>
-                                  <td className="py-3 px-4">
-                                    <span className="text-xs text-zinc-500">
-                                      {formatDate(submission.createdAt)}
-                                    </span>
-                                  </td>
-                                  <td className="py-3 px-4">
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => handleViewCode(submission)}
-                                      className="rounded-full border-purple-500/30 bg-transparent text-zinc-200 hover:bg-purple-500/20 hover:text-white cursor-pointer"
-                                    >
-                                      <FileText className="w-3.5 h-3.5 mr-1" />
-                                      View
-                                    </Button>
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
+                                          <span
+                                            className={`text-sm px-2 py-1 rounded ${getStatusStyle(
+                                              submission.status
+                                            )}`}
+                                          >
+                                            {submission.status || "Unknown"}
+                                          </span>
+                                        </div>
+                                      </td>
+                                      <td className="py-3 px-4">
+                                        <span className="text-sm text-white px-2 py-1 rounded border border-zinc-700">
+                                          {submission.language}
+                                        </span>
+                                      </td>
+                                      <td className="py-3 px-4">
+                                        <span className="text-sm text-zinc-300">
+                                          {submission.time
+                                            ? `${(
+                                                JSON.parse(
+                                                  submission.time
+                                                ).reduce(
+                                                  (a: string, b: string) =>
+                                                    Number(a) + Number(b),
+                                                  0
+                                                ) /
+                                                JSON.parse(submission.time)
+                                                  .length
+                                              ).toFixed(2)} KB`
+                                            : "-"}
+                                        </span>
+                                      </td>
+                                      <td className="py-3 px-4">
+                                        <span className="text-sm text-zinc-300">
+                                          {submission.memory
+                                            ? `${(
+                                                JSON.parse(
+                                                  submission.memory
+                                                ).reduce(
+                                                  (a: number, b: number) =>
+                                                    a + b,
+                                                  0
+                                                ) /
+                                                JSON.parse(submission.memory)
+                                                  .length
+                                              ).toFixed(2)} KB`
+                                            : "-"}
+                                        </span>
+                                      </td>
+                                      <td className="py-3 px-4">
+                                        <span className="text-xs text-zinc-500">
+                                          {formatDate(submission.createdAt)}
+                                        </span>
+                                      </td>
+                                      <td className="py-3 px-4">
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() =>
+                                            handleViewCode(submission)
+                                          }
+                                          className="rounded-full border-purple-500/30 bg-transparent text-zinc-200 hover:bg-purple-500/20 hover:text-white cursor-pointer"
+                                        >
+                                          <FileText className="w-3.5 h-3.5 mr-1" />
+                                          View
+                                        </Button>
+                                      </td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        ) : (
+                          <p className="text-sm text-zinc-500 text-center py-8">
+                            No submissions yet.
+                          </p>
+                        )}
                       </div>
-                    ) : (
-                      <p className="text-sm text-zinc-500 text-center py-8">
-                        No submissions yet.
-                      </p>
                     )}
-                  </div>
-                )}
 
-                {activeTab === "solutions" && (
-                  <div className="flex items-center justify-center">
-                    <FuzzyText
-                      fontSize="clamp(1rem, 4vw, 4rem)"
-                      fontWeight={800}
-                      color="#fff"
-                      baseIntensity={0.2}
-                      hoverIntensity={0.6}
-                      glitchMode={true}
-                      glitchInterval={2000}
-                      glitchDuration={200}
-                      // gradient={['#8B5CF6', '#3B82F6', '#06B6D4']}
-                      className="mb-4"
-                    >
-                      Coming Soon
-                    </FuzzyText>
-                  </div>
-                )}
+                    {activeTab === "solutions" && (
+                      <div className="flex items-center justify-center">
+                        <FuzzyText
+                          fontSize="clamp(1rem, 4vw, 4rem)"
+                          fontWeight={800}
+                          color="#fff"
+                          baseIntensity={0.2}
+                          hoverIntensity={0.6}
+                          glitchMode={true}
+                          glitchInterval={2000}
+                          glitchDuration={200}
+                          // gradient={['#8B5CF6', '#3B82F6', '#06B6D4']}
+                          className="mb-4"
+                        >
+                          Coming Soon
+                        </FuzzyText>
+                      </div>
+                    )}
 
-                {activeTab === "discussions" && (
-                  <div className="flex items-center justify-center">
-                    <FuzzyText
-                      fontSize="clamp(1rem, 4vw, 4rem)"
-                      fontWeight={800}
-                      color="#fff"
-                      baseIntensity={0.2}
-                      hoverIntensity={0.6}
-                      glitchMode={true}
-                      glitchInterval={2000}
-                      glitchDuration={200}
-                      // gradient={['#8B5CF6', '#3B82F6', '#06B6D4']}
-                      className="mb-4"
-                    >
-                      Coming Soon
-                    </FuzzyText>
-                  </div>
-                )}
+                    {activeTab === "discussions" && (
+                      <div className="flex items-center justify-center">
+                        <FuzzyText
+                          fontSize="clamp(1rem, 4vw, 4rem)"
+                          fontWeight={800}
+                          color="#fff"
+                          baseIntensity={0.2}
+                          hoverIntensity={0.6}
+                          glitchMode={true}
+                          glitchInterval={2000}
+                          glitchDuration={200}
+                          // gradient={['#8B5CF6', '#3B82F6', '#06B6D4']}
+                          className="mb-4"
+                        >
+                          Coming Soon
+                        </FuzzyText>
+                      </div>
+                    )}
                   </>
                 )}
               </div>
@@ -647,268 +656,268 @@ export default function ProblemSolverPage() {
                 <Loader />
               </div>
             ) : (
-            <PanelGroup direction="vertical">\n              {/* Editor */}\n              <Panel defaultSize={60} minSize={30}>\n                <div className="h-full flex flex-col bg-transparent">\n                  <div className="h-10 px-3 flex items-center justify-between border-b border-zinc-800 shrink-0">\n                    <span className="text-xs text-zinc-400">Code Editor</span>
-                    <div className="flex items-center gap-2">
-                      <select
-                        value={language}
-                        onChange={(e) => setLanguage(e.target.value)}
-                        className="bg-transparent text-zinc-300 text-xs px-2 py-1 rounded border border-zinc-700 focus:outline-none"
+              <PanelGroup direction="vertical">
+                <Panel defaultSize={60} minSize={30}>
+                  <div className="h-full flex flex-col bg-transparent">
+                    <div className="h-10 px-3 flex items-center justify-between border-b border-zinc-800 shrink-0">
+                      <span className="text-xs text-zinc-400">Code Editor</span>
+                      <div className="flex items-center gap-2">
+                        <select
+                          value={language}
+                          onChange={(e) => setLanguage(e.target.value)}
+                          className="bg-transparent text-zinc-300 text-xs px-2 py-1 rounded border border-zinc-700 focus:outline-none"
+                        >
+                          {Object.keys(
+                            problem.codeSnippets || { javascript: "" }
+                          ).map((l) => (
+                            <option key={l} value={l}>
+                              {l.charAt(0).toUpperCase() + l.slice(1)}
+                            </option>
+                          ))}
+                        </select>
+                        <button
+                          onClick={handleReset}
+                          className="p-1.5 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded"
+                          title="Reset"
+                        >
+                          <RotateCcw className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="flex-1 min-h-0 overflow-hidden">
+                      <Editor
+                        height="100%"
+                        language={language?.toLowerCase() || "javascript"}
+                        theme="vs-dark"
+                        value={code}
+                        onChange={(v) => setCode(v || "")}
+                        options={{
+                          minimap: { enabled: false },
+                          fontSize: 14,
+                          lineNumbers: "on",
+                          scrollBeyondLastLine: false,
+                          automaticLayout: true,
+                          tabSize: 2,
+                          wordWrap: "on",
+                          roundedSelection: false,
+                        }}
+                      />
+                    </div>
+                    <div className="h-14 px-3 flex items-center justify-start gap-2 border-t border-zinc-800 shrink-0">
+                      <Button
+                        variant="outline"
+                        className="rounded-full border-purple-500/30 bg-transparent text-white hover:bg-purple-500/40 hover:text-white cursor-pointer"
+                        size="sm"
+                        onClick={handleRun}
                       >
-                        {Object.keys(
-                          problem.codeSnippets || { javascript: "" }
-                        ).map((l) => (
-                          <option key={l} value={l}>
-                            {l.charAt(0).toUpperCase() + l.slice(1)}
-                          </option>
-                        ))}
-                      </select>
-                      <button
-                        onClick={handleReset}
-                        className="p-1.5 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded"
-                        title="Reset"
+                        {isRunning ? (
+                          <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        ) : (
+                          <Play className="w-3.5 h-3.5" />
+                        )}
+                        Run
+                      </Button>
+
+                      <Button
+                        className="group rounded-full border-t border-purple-400 bg-linear-to-b from-purple-700 to-slate-950/80  text-white shadow-lg shadow-purple-600/20 transition-all hover:shadow-purple-600/40 cursor-pointer"
+                        size="sm"
+                        disabled={isRunning || isSubmitting}
+                        onClick={handleSubmit}
                       >
-                        <RotateCcw className="w-3.5 h-3.5" />
-                      </button>
+                        {isSubmitting ? (
+                          <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        ) : (
+                          <Send className="w-3.5 h-3.5" />
+                        )}
+                        Submit
+                      </Button>
                     </div>
                   </div>
+                </Panel>
+                <PanelResizeHandle className="h-1 bg-zinc-800 hover:bg-zinc-500 transition-colors" />
+                {/* Test Cases */}
+                <Panel defaultSize={30} minSize={20}>
+                  <div className="h-full flex flex-col bg-transparent">
+                    <div className="h-10 px-3 flex items-center gap-2 border-b border-zinc-800 shrink-0">
+                      <button
+                        onClick={() => setShowResults(false)}
+                        className={`px-2 py-1 text-xs rounded ${
+                          !showResults
+                            ? " text-lime-400 border border-lime-500/30"
+                            : "text-zinc-400 hover:text-white"
+                        }`}
+                      >
+                        Test Cases
+                      </button>
+                      <button
+                        onClick={() => setShowResults(true)}
+                        className={`px-2 py-1 text-xs rounded ${
+                          showResults
+                            ? " text-lime-400 border border-lime-500/30"
+                            : "text-zinc-400 hover:text-white"
+                        }`}
+                      >
+                        Test Results
+                      </button>
+                    </div>
 
-                  <div className="flex-1">
-                    <Editor
-                      height="100%"
-                      language={language?.toLowerCase() || "javascript"}
-                      theme="vs-dark"
-                      value={code}
-                      onChange={(v) => setCode(v || "")}
-                      options={{
-                        minimap: { enabled: false },
-                        fontSize: 14,
-                        lineNumbers: "on",
-                        scrollBeyondLastLine: false,
-                        automaticLayout: true,
-                        tabSize: 2,
-                        wordWrap: "on",
-                        roundedSelection: false,
-                      }}
-                    />
-                  </div>
-
-                  <div className="h-14 px-3 flex items-center justify-start gap-2 border-t border-zinc-800 shrink-0">
-                    <Button
-                      variant="outline"
-                      className="rounded-full border-purple-500/30 bg-transparent text-white hover:bg-purple-500/40 hover:text-white cursor-pointer"
-                      size="sm"
-                      onClick={handleRun}
-                    >
-                      {isRunning ? (
-                        <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      ) : (
-                        <Play className="w-3.5 h-3.5" />
-                      )}
-                      Run
-                    </Button>
-
-                    <Button
-                      className="group rounded-full border-t border-purple-400 bg-linear-to-b from-purple-700 to-slate-950/80  text-white shadow-lg shadow-purple-600/20 transition-all hover:shadow-purple-600/40 cursor-pointer"
-                      size="sm"
-                      disabled={isRunning || isSubmitting}
-                      onClick={handleSubmit}
-                    >
-                      {isSubmitting ? (
-                        <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      ) : (
-                        <Send className="w-3.5 h-3.5" />
-                      )}
-                      Submit
-                    </Button>
-                  </div>
-                </div>
-              </Panel>
-
-              <PanelResizeHandle className="h-1 bg-zinc-800 hover:bg-zinc-500 transition-colors" />
-
-              {/* Test Cases */}
-              <Panel defaultSize={30} minSize={20}>
-                <div className="h-full flex flex-col bg-transparent">
-                  <div className="h-10 px-3 flex items-center gap-2 border-b border-zinc-800 shrink-0">
-                    <button
-                      onClick={() => setShowResults(false)}
-                      className={`px-2 py-1 text-xs rounded ${
-                        !showResults
-                          ? " text-lime-400 border border-lime-500/30"
-                          : "text-zinc-400 hover:text-white"
-                      }`}
-                    >
-                      Test Cases
-                    </button>
-                    <button
-                      onClick={() => setShowResults(true)}
-                      className={`px-2 py-1 text-xs rounded ${
-                        showResults
-                          ? " text-lime-400 border border-lime-500/30"
-                          : "text-zinc-400 hover:text-white"
-                      }`}
-                    >
-                      Test Results
-                    </button>
-                  </div>
-
-                  <div className="flex-1 overflow-y-auto p-3">
-                    {!showResults ? (
-                      <div>
-                        <div className="flex items-center gap-2 mb-3 flex-wrap">
-                          {testCases.slice(0, 2).map((_, i) => (
-                            <button
-                              key={i}
-                              onClick={() => setActiveCase(i)}
-                              className={`px-3 py-1 text-xs rounded cursor-pointer ${
-                                activeCase === i
-                                  ? "border border-purple-500/30 text-white bg-purple-700/40"
-                                  : "border border-purple-500/30  text-white hover:bg-purple-700/20"
-                              }`}
-                            >
-                              Case {i + 1}
-                            </button>
-                          ))}
-                        </div>
-                        {testCases[activeCase] && (
-                          <div className="space-y-3">
-                            <div>
-                              <label className="text-xs text-white block mb-1">
-                                Input
-                              </label>
-                              <div className="bg-transparent border border-zinc-400/40 rounded p-2">
-                                <code className="text-sm text-zinc-300 font-mono">
-                                  {testCases[activeCase].input}
-                                </code>
-                              </div>
-                            </div>
-                            <div>
-                              <label className="text-xs text-white block mb-1">
-                                Expected Output
-                              </label>
-                              <div className="bg-transparent border border-zinc-400/40 rounded p-2">
-                                <code className="text-sm text-zinc-300 font-mono">
-                                  {testCases[activeCase].output}
-                                </code>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    ) : (
-                      <div>
-                        {results ? (
-                          <div className="space-y-2">
-                            {results.map((r, i) => (
-                              <div
+                    <div className="flex-1 overflow-y-auto p-3">
+                      {!showResults ? (
+                        <div>
+                          <div className="flex items-center gap-2 mb-3 flex-wrap">
+                            {testCases.slice(0, 2).map((_, i) => (
+                              <button
                                 key={i}
-                                className={`p-3 rounded-lg border ${
-                                  r.isTestPassed
-                                    ? "bg-green-500/10 border-green-500/30"
-                                    : "bg-red-500/10 border-red-500/30"
+                                onClick={() => setActiveCase(i)}
+                                className={`px-3 py-1 text-xs rounded cursor-pointer ${
+                                  activeCase === i
+                                    ? "border border-purple-500/30 text-white bg-purple-700/40"
+                                    : "border border-purple-500/30  text-white hover:bg-purple-700/20"
                                 }`}
                               >
-                                <div className="flex items-center gap-2 mb-2">
-                                  {r.isTestPassed ? (
-                                    <Check className="w-4 h-4 text-green-400" />
-                                  ) : (
-                                    <X className="w-4 h-4 text-red-400" />
-                                  )}
-                                  <span
-                                    className={`text-sm font-medium ${
-                                      r.isTestPassed
-                                        ? "text-green-400"
-                                        : "text-red-400"
-                                    }`}
-                                  >
-                                    Case {r.testCaseNumber}{" "}
-                                    {r.isTestPassed ? "Passed" : "Failed"}
-                                  </span>
-                                  <span className="text-xs text-zinc-500 ml-auto">
-                                    {r.status}
-                                  </span>
-                                </div>
-                                <div className="text-xs space-y-1">
-                                  {testCases[i] && (
-                                    <p className="text-zinc-500">
-                                      Input:{" "}
-                                      <code className="text-zinc-300">
-                                        {testCases[i].input}
-                                      </code>
-                                    </p>
-                                  )}
-                                  <p className="text-zinc-500">
-                                    Expected:{" "}
-                                    <code className="text-zinc-300">
-                                      {r.expected_output}
-                                    </code>
-                                  </p>
-                                  {r.stdout !== null && (
-                                    <p className="text-zinc-500">
-                                      Output:{" "}
-                                      <code
-                                        className={
-                                          r.isTestPassed
-                                            ? "text-zinc-300"
-                                            : "text-red-300"
-                                        }
-                                      >
-                                        {r.stdout}
-                                      </code>
-                                    </p>
-                                  )}
-                                  {r.stderr && (
-                                    <p className="text-zinc-500">
-                                      Error:{" "}
-                                      <code className="text-red-300">
-                                        {r.stderr}
-                                      </code>
-                                    </p>
-                                  )}
-                                  {r.compile_output && (
-                                    <p className="text-zinc-500">
-                                      Compile Error:{" "}
-                                      <code className="text-red-300">
-                                        {r.compile_output}
-                                      </code>
-                                    </p>
-                                  )}
-                                  {(r.time !== undefined ||
-                                    r.memory !== undefined) && (
-                                    <div className="flex gap-4 mt-2 pt-2 border-t border-zinc-700">
-                                      {r.time !== undefined && (
-                                        <span className="text-zinc-400">
-                                          Time:{" "}
-                                          <span className="text-lime-400">
-                                            {r.time}s
-                                          </span>
-                                        </span>
-                                      )}
-                                      {r.memory !== undefined && (
-                                        <span className="text-zinc-400">
-                                          Memory:{" "}
-                                          <span className="text-lime-400">
-                                            {r.memory} KB
-                                          </span>
-                                        </span>
-                                      )}
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
+                                Case {i + 1}
+                              </button>
                             ))}
                           </div>
-                        ) : (
-                          <p className="text-sm text-zinc-500 text-center py-4">
-                            Run your code to see results
-                          </p>
-                        )}
-                      </div>
-                    )}
+                          {testCases[activeCase] && (
+                            <div className="space-y-3">
+                              <div>
+                                <label className="text-xs text-white block mb-1">
+                                  Input
+                                </label>
+                                <div className="bg-transparent border border-zinc-400/40 rounded p-2">
+                                  <code className="text-sm text-zinc-300 font-mono">
+                                    {testCases[activeCase].input}
+                                  </code>
+                                </div>
+                              </div>
+                              <div>
+                                <label className="text-xs text-white block mb-1">
+                                  Expected Output
+                                </label>
+                                <div className="bg-transparent border border-zinc-400/40 rounded p-2">
+                                  <code className="text-sm text-zinc-300 font-mono">
+                                    {testCases[activeCase].output}
+                                  </code>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <div>
+                          {results ? (
+                            <div className="space-y-2">
+                              {results.map((r, i) => (
+                                <div
+                                  key={i}
+                                  className={`p-3 rounded-lg border ${
+                                    r.isTestPassed
+                                      ? "bg-green-500/10 border-green-500/30"
+                                      : "bg-red-500/10 border-red-500/30"
+                                  }`}
+                                >
+                                  <div className="flex items-center gap-2 mb-2">
+                                    {r.isTestPassed ? (
+                                      <Check className="w-4 h-4 text-green-400" />
+                                    ) : (
+                                      <X className="w-4 h-4 text-red-400" />
+                                    )}
+                                    <span
+                                      className={`text-sm font-medium ${
+                                        r.isTestPassed
+                                          ? "text-green-400"
+                                          : "text-red-400"
+                                      }`}
+                                    >
+                                      Case {r.testCaseNumber}{" "}
+                                      {r.isTestPassed ? "Passed" : "Failed"}
+                                    </span>
+                                    <span className="text-xs text-zinc-500 ml-auto">
+                                      {r.status}
+                                    </span>
+                                  </div>
+                                  <div className="text-xs space-y-1">
+                                    {testCases[i] && (
+                                      <p className="text-zinc-500">
+                                        Input:{" "}
+                                        <code className="text-zinc-300">
+                                          {testCases[i].input}
+                                        </code>
+                                      </p>
+                                    )}
+                                    <p className="text-zinc-500">
+                                      Expected:{" "}
+                                      <code className="text-zinc-300">
+                                        {r.expected_output}
+                                      </code>
+                                    </p>
+                                    {r.stdout !== null && (
+                                      <p className="text-zinc-500">
+                                        Output:{" "}
+                                        <code
+                                          className={
+                                            r.isTestPassed
+                                              ? "text-zinc-300"
+                                              : "text-red-300"
+                                          }
+                                        >
+                                          {r.stdout}
+                                        </code>
+                                      </p>
+                                    )}
+                                    {r.stderr && (
+                                      <p className="text-zinc-500">
+                                        Error:{" "}
+                                        <code className="text-red-300">
+                                          {r.stderr}
+                                        </code>
+                                      </p>
+                                    )}
+                                    {r.compile_output && (
+                                      <p className="text-zinc-500">
+                                        Compile Error:{" "}
+                                        <code className="text-red-300">
+                                          {r.compile_output}
+                                        </code>
+                                      </p>
+                                    )}
+                                    {(r.time !== undefined ||
+                                      r.memory !== undefined) && (
+                                      <div className="flex gap-4 mt-2 pt-2 border-t border-zinc-700">
+                                        {r.time !== undefined && (
+                                          <span className="text-zinc-400">
+                                            Time:{" "}
+                                            <span className="text-lime-400">
+                                              {r.time}s
+                                            </span>
+                                          </span>
+                                        )}
+                                        {r.memory !== undefined && (
+                                          <span className="text-zinc-400">
+                                            Memory:{" "}
+                                            <span className="text-lime-400">
+                                              {r.memory} KB
+                                            </span>
+                                          </span>
+                                        )}
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <p className="text-sm text-zinc-500 text-center py-4">
+                              Run your code to see results
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              </Panel>
-            </PanelGroup>
+                </Panel>
+              </PanelGroup>
             )}
           </Panel>
         </PanelGroup>
@@ -941,7 +950,14 @@ export default function ProblemSolverPage() {
                     <span className="text-sm text-zinc-400">
                       Runtime:{" "}
                       <span className="text-lime-400">
-                        {selectedSubmission.time}
+                        {selectedSubmission.time
+                          ? `${(
+                              JSON.parse(selectedSubmission.time).reduce(
+                                (a: string, b: string) => Number(a) + Number(b),
+                                0
+                              ) / JSON.parse(selectedSubmission.time).length
+                            ).toFixed(2)} KB`
+                          : "-"}
                       </span>
                     </span>
                   )}
@@ -949,7 +965,14 @@ export default function ProblemSolverPage() {
                     <span className="text-sm text-zinc-400">
                       Memory:{" "}
                       <span className="text-lime-400">
-                        {selectedSubmission.memory}
+                        {selectedSubmission.memory
+                          ? `${(
+                              JSON.parse(selectedSubmission.memory).reduce(
+                                (a: number, b: number) => a + b,
+                                0
+                              ) / JSON.parse(selectedSubmission.memory).length
+                            ).toFixed(2)} KB`
+                          : "-"}
                       </span>
                     </span>
                   )}

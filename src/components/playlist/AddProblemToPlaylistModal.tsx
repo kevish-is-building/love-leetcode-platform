@@ -19,7 +19,8 @@ export default function AddProblemToPlaylistModal({
   problemId,
   problemTitle = "this problem",
 }: AddProblemToPlaylistModalProps) {
-  const { playlists, isLoading, getAllPlaylists, addProblemToPlaylist } = usePlaylistStore();
+  const { playlists, isLoading, getAllPlaylists, addProblemToPlaylist } =
+    usePlaylistStore();
   const [selectedPlaylistIds, setSelectedPlaylistIds] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -82,7 +83,7 @@ export default function AddProblemToPlaylistModal({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={handleClose}
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            className="absolute inset-0 bg-transparent backdrop-blur-xs"
           />
 
           {/* Modal */}
@@ -91,12 +92,12 @@ export default function AddProblemToPlaylistModal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="relative w-full max-w-md bg-gray-900/95 backdrop-blur-xl border border-gray-700/50 rounded-xl shadow-2xl overflow-hidden"
+            className="relative w-full max-w-md bg-transparent backdrop-blur-xl border border-gray-700/50 rounded-sm shadow-2xl overflow-hidden"
           >
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-gray-700/50">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-purple-500/10 rounded-lg">
+                <div className="p-2 bg-purple-500/10 rounded">
                   <Bookmark className="w-5 h-5 text-purple-400" />
                 </div>
                 <div>
@@ -111,7 +112,7 @@ export default function AddProblemToPlaylistModal({
               <button
                 onClick={handleClose}
                 disabled={isSubmitting}
-                className="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2 text-gray-400 hover:text-rose-600 hover:bg-gray-800 rounded-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 aria-label="Close modal"
               >
                 <X className="w-5 h-5" />
@@ -148,7 +149,9 @@ export default function AddProblemToPlaylistModal({
                   {/* Playlists List */}
                   <div className="space-y-2 max-h-96 overflow-y-auto custom-scrollbar">
                     {playlists.map((playlist) => {
-                      const isSelected = selectedPlaylistIds.includes(playlist.id);
+                      const isSelected = selectedPlaylistIds.includes(
+                        playlist.id
+                      );
                       const problemCount = playlist.problems?.length || 0;
 
                       return (
@@ -184,7 +187,8 @@ export default function AddProblemToPlaylistModal({
                               </p>
                             )}
                             <p className="text-xs text-gray-500">
-                              {problemCount} {problemCount === 1 ? "problem" : "problems"}
+                              {problemCount}{" "}
+                              {problemCount === 1 ? "problem" : "problems"}
                             </p>
                           </div>
                         </motion.label>
@@ -200,16 +204,20 @@ export default function AddProblemToPlaylistModal({
                     <div className="flex gap-3">
                       <Button
                         type="button"
+                        variant="outline"
+                        className="rounded-full border-purple-500/30 bg-transparent text-white hover:bg-purple-500/40 hover:text-white cursor-pointer"
+                        size="lg"
                         onClick={handleClose}
-                        disabled={isSubmitting}
-                        className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white"
                       >
                         Cancel
                       </Button>
                       <Button
                         type="submit"
-                        disabled={selectedPlaylistIds.length === 0 || isSubmitting}
-                        className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                        className="group rounded-full border-t border-purple-400 bg-linear-to-b from-purple-700 to-slate-950/80  text-white shadow-lg shadow-purple-600/20 transition-all hover:shadow-purple-600/40 cursor-pointer"
+                        size="lg"
+                        disabled={
+                          selectedPlaylistIds.length === 0 || isSubmitting
+                        }
                       >
                         {isSubmitting ? (
                           <>
@@ -217,7 +225,10 @@ export default function AddProblemToPlaylistModal({
                             Adding...
                           </>
                         ) : (
-                          <>Add to Playlist{selectedPlaylistIds.length > 1 ? "s" : ""}</>
+                          <>
+                            Add to Playlist
+                            {selectedPlaylistIds.length > 1 ? "s" : ""}
+                          </>
                         )}
                       </Button>
                     </div>

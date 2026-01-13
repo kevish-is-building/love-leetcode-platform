@@ -197,6 +197,8 @@ export default function ProblemsPage() {
               <tbody className="divide-y divide-gray-700/30">
                 <AnimatePresence mode="popLayout">
                   {problems
+                    .slice()
+                    .reverse()
                     .slice(0, visibleCount)
                     .map((problem, idx) => {
                       const isSolved = (problem?.solvedBy?.length ?? 0) > 0;

@@ -363,6 +363,7 @@ export default function AppHero() {
                 variant="outline"
                 className="rounded-full border-purple-500/30 bg-transparent text-white hover:bg-purple-500/40 hover:text-white cursor-pointer"
                 size="lg"
+                onClick={() => (window.location.href = "/learn")}
               >
                 Explore Learning Path
               </Button>
