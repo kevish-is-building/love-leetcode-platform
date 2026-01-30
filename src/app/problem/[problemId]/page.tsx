@@ -765,7 +765,7 @@ export default function ProblemSolverPage() {
                       {!showResults ? (
                         <div>
                           <div className="flex items-center gap-2 mb-3 flex-wrap">
-                            {testCases.slice(0, 2).map((_, i) => (
+                            {testCases?.slice(0, 2).map((_, i) => (
                               <button
                                 key={i}
                                 onClick={() => setActiveCase(i)}
@@ -779,7 +779,7 @@ export default function ProblemSolverPage() {
                               </button>
                             ))}
                           </div>
-                          {testCases[activeCase] && (
+                          {testCases?.[activeCase] && (
                             <div className="space-y-3">
                               <div>
                                 <label className="text-xs text-white block mb-1">
@@ -787,7 +787,7 @@ export default function ProblemSolverPage() {
                                 </label>
                                 <div className="bg-transparent border border-zinc-400/40 rounded p-2">
                                   <code className="text-sm text-zinc-300 font-mono">
-                                    {testCases[activeCase].input}
+                                    {testCases?.[activeCase].input}
                                   </code>
                                 </div>
                               </div>
@@ -797,7 +797,7 @@ export default function ProblemSolverPage() {
                                 </label>
                                 <div className="bg-transparent border border-zinc-400/40 rounded p-2">
                                   <code className="text-sm text-zinc-300 font-mono">
-                                    {testCases[activeCase].output}
+                                    {testCases?.[activeCase].output}
                                   </code>
                                 </div>
                               </div>
@@ -838,7 +838,7 @@ export default function ProblemSolverPage() {
                                     </span>
                                   </div>
                                   <div className="text-xs space-y-1">
-                                    {testCases[i] && (
+                                    {testCases?.[i] && (
                                       <p className="text-zinc-500">
                                         Input:{" "}
                                         <code className="text-zinc-300">
