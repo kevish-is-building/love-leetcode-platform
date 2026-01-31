@@ -198,7 +198,7 @@ export default function ProblemsPage() {
                 <AnimatePresence mode="popLayout">
                   {problems
                     // ?.slice()
-                    .reverse()
+                    // .reverse()
                     .slice(0, visibleCount)
                     .map((problem, idx) => {
                       const isSolved = (problem?.solvedBy?.length ?? 0) > 0;
