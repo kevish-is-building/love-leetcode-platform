@@ -25,7 +25,7 @@ export const useProblemStore = create<ProblemStore>((set, get) => ({
     try {
       set({ isLoading: true });
       const response: any = await problemAPI.getAll();
-      set({ problems: response.data || [] });
+      set({ problems: response.data.problems || [] });
     } catch (error) {
       console.error("Failed to fetch problems:", error);
       toast.error("Failed to load problems");
