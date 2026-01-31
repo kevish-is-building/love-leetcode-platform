@@ -197,7 +197,7 @@ export default function ProblemsPage() {
               <tbody className="divide-y divide-gray-700/30">
                 <AnimatePresence mode="popLayout">
                   {problems
-                    ?.slice()
+                    // ?.slice()
                     .reverse()
                     .slice(0, visibleCount)
                     .map((problem, idx) => {
